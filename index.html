@@ -17,11 +17,11 @@
                       <div class = "col-md-2">
                         <label for="listPlayers">Players</label>
                         <ul class="list-group list-special" id ="listPlayers">
-                          <li class="list-group-item">Player 1</li>
-                          <li class="list-group-item">Player 2</li>
-                          <li class="list-group-item">Player 3</li>
-                          <li class="list-group-item">Player 4</li>
-                          <li class="list-group-item">Player 5</li>
+                          <li class="list-group-item"></li>
+                          <li class="list-group-item"></li>
+                          <li class="list-group-item"></li>
+                          <li class="list-group-item"></li>
+                          <li class="list-group-item"></li>
 
                         </ul>
 
@@ -55,7 +55,9 @@
                           <div class = "input-group-btn">
                             <button type="submit" class="btn btn-primary" id = "btnChat">Send</button>
                           </div>
+
                         </div>
+                        <label id = "lblUsername">Your username: </label>
 
                       </div>
 
@@ -81,10 +83,16 @@
   <script src = "canvas.js"></script>
 
   <script>
+
     var socket = io();
+    var userName = prompt("Welcome! Enter your name: ");
+    var userLabel = document.getElementById('lblUsername');
+
+    userLabel.innerHTML = "Your username:  " + userName;
+    var userNameToChat = userLabel.innerHTML.slice(15, userLabel.length)
 
     $('form').submit(function(){
-      socket.emit('chat message', $('#txtChat').val());
+      socket.emit('chat message', userNameToChat + ": " + $('#txtChat').val());
       $('#txtChat').val('');
       return false;
     });
@@ -92,6 +100,8 @@
     socket.on('chat message',function (msg){
       $('#exampleTextarea').append(msg + '\n');
     });
+
+
 
   </script>
 

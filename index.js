@@ -2,9 +2,14 @@ var express = require('express'),app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+//var userName = prompt("Welcome! Enter your name: ")
+
+
 app.use(express.static(__dirname + '/lib'));
 app.use(express.static(__dirname + '/src'));
 app.use(express.static(__dirname + '/node_modules'));
+
+var usernames = {};
 
 
 app.get('/', function(req, res){
@@ -30,7 +35,6 @@ io.on('connection', function(socket){
   });
 
 });
-
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
