@@ -1,0 +1,98 @@
+<html>
+  <head>
+      <link href = "bootstrap-3.3.7-dist\css\bootstrap.min.css" rel = "stylesheet" />
+      <link href = "css\style.css" rel = "stylesheet" />
+  </head>
+
+  <body>
+    <br>
+      <div class = "container-fluid">
+
+        <div class = "row">
+          <div class = "col-lg-7">
+
+
+                    <div class = "row">
+
+                      <div class = "col-md-2">
+                        <label for="listPlayers">Players</label>
+                        <ul class="list-group list-special" id ="listPlayers">
+                          <li class="list-group-item">Player 1</li>
+                          <li class="list-group-item">Player 2</li>
+                          <li class="list-group-item">Player 3</li>
+                          <li class="list-group-item">Player 4</li>
+                          <li class="list-group-item">Player 5</li>
+
+                        </ul>
+
+
+                      </div>
+
+                      <div class = "col-md-10">
+
+                        <label for="txtAreaGame">Game</label>
+                        <textarea class="form-control" id="txtAreaGame" rows="3"></textarea>
+                        <div class = "input-group">
+                          <input type = "text" class = "form-control" id = "txtGame">
+                          <div class = "input-group-btn">
+                            <button type="submit" class="btn btn-primary" id = "btnGame">Send</button>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                    </div>
+
+                    <form>
+
+                      <div class="form-group">
+                        <label for="exampleTextarea">Social/Game Activity</label>
+                        <textarea class="form-control" id="exampleTextarea" rows="3" value = "test"></textarea>
+
+                        <div class = "input-group">
+                          <input type = "text" class = "form-control" id = "txtChat">
+                          <div class = "input-group-btn">
+                            <button type="submit" class="btn btn-primary" id = "btnChat">Send</button>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </form>
+
+                  </div>
+
+
+                  <div class = "col-lg-5">
+
+                    <canvas id = "myCanvas" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
+
+
+                  </div>
+          </div>
+        </div>
+
+
+  </body>
+  <script src = "socket.io/socket.io.js"></script>
+  <script src = "jquery-3.1.1.js"></script>
+  <script src = "sketch.js"></script>
+  <script src = "canvas.js"></script>
+
+  <script>
+    var socket = io();
+
+    $('form').submit(function(){
+      socket.emit('chat message', $('#txtChat').val());
+      $('#txtChat').val('');
+      return false;
+    });
+
+    socket.on('chat message',function (msg){
+      $('#exampleTextarea').append(msg + '\n');
+    });
+
+  </script>
+
+</html>
