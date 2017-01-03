@@ -17,11 +17,7 @@
                       <div class = "col-md-2">
                         <label for="listPlayers">Players</label>
                         <ul class="list-group list-special" id ="listPlayers">
-                          <li class="list-group-item"></li>
-                          <li class="list-group-item"></li>
-                          <li class="list-group-item"></li>
-                          <li class="list-group-item"></li>
-                          <li class="list-group-item"></li>
+
 
                         </ul>
 
@@ -39,16 +35,11 @@
                           </div>
                         </div>
                       </div>
-
-
-
                     </div>
-
                     <form>
-
                       <div class="form-group">
                         <label for="exampleTextarea">Social/Game Activity</label>
-                        <textarea class="form-control" id="exampleTextarea" rows="3" value = "test"></textarea>
+                        <textarea class="form-control" id="exampleTextarea" rows="3" value = "test" disabled></textarea>
 
                         <div class = "input-group">
                           <input type = "text" class = "form-control" id = "txtChat">
@@ -67,9 +58,8 @@
 
 
                   <div class = "col-lg-5">
-
-                    <canvas id = "myCanvas" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
-
+                    <canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
+                    <!--canvas id = "c2" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas-->
 
                   </div>
           </div>
@@ -79,20 +69,42 @@
   </body>
   <script src = "socket.io/socket.io.js"></script>
   <script src = "jquery-3.1.1.js"></script>
-  <script src = "sketch.js"></script>
+  <script src = "fabric.js"></script>
   <script src = "canvas.js"></script>
 
   <script>
 
     var socket = io();
-    var userName = prompt("Welcome! Enter your name: ");
+    var userName = prompt("Welcome! Enter your name: ", "guest_user");
     var userLabel = document.getElementById('lblUsername');
 
     userLabel.innerHTML = "Your username:  " + userName;
     var userNameToChat = userLabel.innerHTML.slice(15, userLabel.length)
 
+	socket.on('new_user', function(msg){
+		$('#exampleTextarea').append(msg + '\n')
+	});
+	
+	socket.on('draw', function(data){
+		canvas.loadFromJSON(data);
+		canvas.renderAll();
+	});
+	
+	
+	//
+	socket.emit('new_user', "A new user has joined!");
+	
+    function updateTime()
+    {
+      var date = new Date();
+      var time = date.toLocaleTimeString();
+      var message = "[" + time + "]" + userNameToChat + ": ";
+      return message;
+    }
+
     $('form').submit(function(){
-      socket.emit('chat message', userNameToChat + ": " + $('#txtChat').val());
+      socket.emit('chat message', updateTime() + $('#txtChat').val());
+	  //socket.emit('draw', JSON.stringify(canvas));
       $('#txtChat').val('');
       return false;
     });
@@ -100,9 +112,18 @@
     socket.on('chat message',function (msg){
       $('#exampleTextarea').append(msg + '\n');
     });
+	
+	/*setTimeout(function(){
+		socket.emit('draw', JSON.stringify(canvas));
+	}, 2500);*/
 
+	canvas.observe('mouse:up', function(){
+		console.log('mouse up');
+		socket.emit('draw', JSON.stringify(canvas));
+		});
 
-
+	
+	
   </script>
 
 </html>

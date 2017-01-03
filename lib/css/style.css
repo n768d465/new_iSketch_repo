@@ -32,7 +32,7 @@ p,label
   height: 500px;
   background-color: #484848;
   border-color:#303030;
-  color:#A0A0A0
+  color:#008ea8;
 }
 
 #txtAreaGame
@@ -49,9 +49,6 @@ p,label
   border-radius: 0 !important;
 }
 
-#txtGame
-{
-}
 
 #btnChat,#btnGame
 {

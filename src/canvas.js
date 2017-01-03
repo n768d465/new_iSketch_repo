@@ -1,6 +1,16 @@
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
+var canvas = new fabric.Canvas('c');
 
-$(function(){
-  $('#myCanvas').sketch();
-})
+canvas.isDrawingMode = true;
+
+function fetchCanvasData(){
+	var canvasData = JSON.stringify(canvas);
+	console.log(canvasData);
+	return canvasData;
+}
+
+function sendCanvasData(){
+	canvas.loadFromJSON(fetchCanvasData());
+    return canvas.renderAll();
+	
+}
+
