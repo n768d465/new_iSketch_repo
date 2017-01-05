@@ -15,7 +15,7 @@ p,label{ color: #008ea8; }
 
 .form-group { height:50%; }
 
-#exampleTextArea
+#txtAreaChat
 {
 	border-radius: 0 !important;
 	resize: none;

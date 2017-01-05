@@ -32,8 +32,8 @@
 					
 					<form>
 						<div class="form-group">
-                        <label for="exampleTextarea">Social/Game Activity</label>
-                        <textarea class="form-control" id="exampleTextarea" rows="3" value = "test" disabled></textarea>
+                        <label for="txtAreaChat">Social/Game Activity</label>
+                        <textarea class="form-control" id="txtAreaChat" rows="3" value = "test" disabled></textarea>
 
                         <div class = "input-group">
 							<input type = "text" class = "form-control" id = "txtChat">
@@ -51,8 +51,15 @@
 				  
 				<div class = "col-lg-5">
 					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
+					
 					<button class = "btn btn-default" id = "btnClearCanvas">Clear</button>
+					<input type = "color" id = "colors"/>
+					
+					<label for="drawing-line-width">Line width:</label>
+					<span class="info">4</span><input type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%"><br>
 				</div>
+				
+				
           </div>
         </div>
 
