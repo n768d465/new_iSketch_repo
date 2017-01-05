@@ -32,7 +32,10 @@ p,label
   height: 500px;
   background-color: #484848;
   border-color:#303030;
-  color:#008ea8;
+  /*color:#91C3DC;*/
+  color: #659CEF;
+  text-shadow: 1px 1px black;
+
 }
 
 #txtAreaGame
