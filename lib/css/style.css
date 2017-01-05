@@ -1,89 +1,52 @@
 body
 {
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#424242+0,0e0e0e+99 */
-background: #424242; /* Old browsers */
-background: -moz-linear-gradient(top,  #424242 0%, #0e0e0e 99%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  #424242 0%,#0e0e0e 99%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  #424242 0%,#0e0e0e 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+	background: #424242; /* Old browsers */
+	background: -moz-linear-gradient(top,  #424242 0%, #0e0e0e 99%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #424242 0%,#0e0e0e 99%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #424242 0%,#0e0e0e 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
 }
 
 
-p,label
-{
-  color: #008ea8;
-}
+p,label{ color: #008ea8; }
 
-.list-group
-{
-  width:100%;
-}
+.list-group { width:100%; }
 
-.form-group
-{
-  height:50%
-}
-
+.form-group { height:50%; }
 
 #exampleTextArea
 {
-  border-radius: 0 !important;
-  resize: none;
-  height: 500px;
-  background-color: #484848;
-  border-color:#303030;
-  /*color:#91C3DC;*/
-  color: #659CEF;
-  text-shadow: 1px 1px black;
+	border-radius: 0 !important;
+	resize: none;
+	height: 500px;
+	background-color: #484848;
+	border-color:#303030;
+ 
+	/*color:#91C3DC;*/
+	color: #659CEF;
+	/*color: #FF5B00;*/ /* color for server messages */
+	text-shadow: 1px 1px black;
 
 }
 
 #txtAreaGame
 {
-  border-radius: 0 !important;
-  resize: none;
-  height:163px;
-  background-color: #E0E0E0;
+	border-radius: 0 !important;
+	resize: none;
+	height:163px;
+	background-color: #E0E0E0;
 }
 
+.btn { border-radius: 0 !important; }
 
-#txtChat,#txtGame
-{
-  border-radius: 0 !important;
-}
+#txtChat,#txtGame { border-radius: 0 !important; }
 
-
-#btnChat,#btnGame
-{
-  position:relative;
-  left:1px;
-  height:34px;
-}
-#btnGame
-{
-
-}
-
-.btn
-{
-  border-radius: 0 !important;
-}
-
+#btnChat,#btnGame { position:relative; left:1px; height:34px; }
 
 /* http://www.bootply.com/95585 */
-.list-special .list-group-item:first-child
-{
-  border-top-right-radius: 0px;
-  border-top-left-radius: 0px;
-}
+.list-special .list-group-item:first-child { border-top-right-radius: 0px; border-top-left-radius: 0px;}
 
-.list-special .list-group-item:last-child
-{
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
+.list-special .list-group-item:last-child { border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; }
 
-.list-group-item
-{
-  border:none;
-}
+.list-group-item{ border:none; }

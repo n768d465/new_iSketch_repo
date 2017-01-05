@@ -31,7 +31,9 @@ io.on('connection', function(socket){
 	});
   
 	socket.on('add_user', function(name){
-		usernames.push(name);
+		var player = {username: "", points: 0, isDrawing: false, isWinner: false};
+		player.username = name;
+		usernames.push(player);
 		console.log(usernames);
 		io.emit('add_user',usernames); 
 	});
@@ -70,9 +72,17 @@ io.on('connection', function(socket){
 });
 
 
-function removePlayer(playerName){
-	var user = usernames.indexOf(playerName);
+/*function removePlayer(playerName){
+	var user = usernames.indexOf(playerName.username);
 	usernames.splice(user, 1);
+}*/
+
+function removePlayer(playerName){
+	/* Needed a way to get the index of an object inside an array, found this method: 
+	 * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
+	 */
+	var index = usernames.map(function(e) { return e.username; }).indexOf(playerName);
+	usernames.splice(index, 1);
 }
 
 
