@@ -16,21 +16,23 @@
 							<ul class="list-group list-special" id ="listPlayers">
 							</ul>
 						</div>
+					
+						<form id = "formGame">
+							<div class = "col-md-10">
 
-						<div class = "col-md-10">
-
-							<label for="txtAreaGame">Game</label>
-							<textarea class="form-control" id="txtAreaGame" rows="3"></textarea>
-							<div class = "input-group">
-								<input type = "text" class = "form-control" id = "txtGame">
-								<div class = "input-group-btn">
-									<button type="submit" class="btn btn-primary" id = "btnGame">Send</button>
+								<label for="txtAreaGame">Game</label>
+								<textarea class="form-control" id="txtAreaGame" rows="3"></textarea>
+								<div class = "input-group">
+									<input type = "text" class = "form-control" id = "txtGame">
+									<div class = "input-group-btn">
+										<button type="submit" class="btn btn-primary" id = "btnGame">Send</button>
+									</div>
 								</div>
-							</div>
-                      </div>
+						</div>
+						</form>
                     </div>
 					
-					<form>
+					<form id = "formChat">
 						<div class="form-group">
                         <label for="txtAreaChat">Social/Game Activity</label>
                         <textarea class="form-control" id="txtAreaChat" rows="3" value = "test" disabled></textarea>
@@ -52,11 +54,14 @@
 				<div class = "col-lg-5">
 					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
 					
-					<button class = "btn btn-default" id = "btnClearCanvas">Clear</button>
-					<input type = "color" id = "colors"/>
+					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
+					<input type = "color" class = "drawingTools" id = "colors"/>
 					
-					<label for="drawing-line-width">Line width:</label>
-					<span class="info">4</span><input type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%"><br>
+					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
+					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%"><br>
+					
+					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
+					<p id = "isDrawing">test</p>
 				</div>
 				
 				

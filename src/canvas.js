@@ -19,3 +19,7 @@ lineWidth.onchange = function(){
 $('#btnClearCanvas').click(function(){
 	socket.emit('draw', canvas.clear());
 });
+
+$('#btnSkip').click(function(name){
+	socket.emit('next artist');
+});

@@ -15,6 +15,7 @@ p,label{ color: #008ea8; }
 
 .form-group { height:50%; }
 
+#listPlayers { font-size: 11px; }
 #txtAreaChat
 {
 	border-radius: 0 !important;
@@ -30,12 +31,19 @@ p,label{ color: #008ea8; }
 
 }
 
+#txtAreaChat:hover, #txtAreaGame:hover{cursor: default;}
+
 #txtAreaGame
 {
 	border-radius: 0 !important;
 	resize: none;
 	height:163px;
 	background-color: #E0E0E0;
+	background-color: #484848;
+	border-color:#303030;
+	color: #659CEF;
+	/*color: #FF5B00;*/ /* color for server messages */
+	text-shadow: 1px 1px black;
 }
 
 .btn { border-radius: 0 !important; }
