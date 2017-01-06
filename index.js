@@ -89,13 +89,18 @@ io.on('connection', function(socket){
     })
 	
 	socket.on('next artist', function(data){
-		
 		for(var i = 0; i < clients.length; i++){
 			io.sockets.in(clients[i]).emit('next artist', usernames[i % usernames.length]);		
 		}
 		
 	});
 	
+	socket.on('next artist on skip', function(data){
+		setNextArtist();
+		for(var i = 0; i < clients.length; i++){
+			io.sockets.in(clients[i]).emit('next artist on skip', usernames[i % usernames.length]);		
+		}	
+	});
 
 });
 

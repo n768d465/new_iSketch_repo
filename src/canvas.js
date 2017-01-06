@@ -21,5 +21,5 @@ $('#btnClearCanvas').click(function(){
 });
 
 $('#btnSkip').click(function(name){
-	socket.emit('next artist');
+	socket.emit('next artist on skip');
 });

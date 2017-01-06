@@ -33,19 +33,24 @@ socket.on('add_user', function(name){
 socket.on('next artist', function(data){
 		
 	if(data.isDrawing == true){
-		//document.getElementById("isDrawing").innerHTML = "You are drawing";
-		$("#isDrawing").html("You are drawing.");
+		addArtistPrivileges();
 	}
 	else{
-		$("#isDrawing").html("You are NOT drawing.");
-		$(".drawingTools").hide();
-		canvas.isDrawingMode = false;
-		canvas.hoverCursor = "default";
+		removeArtistPrivileges();
 	}
-
-
 });
+
+socket.on('next artist on skip', function(data){
 	
+	if(data.isDrawing == true){
+		addArtistPrivileges();
+		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+	}
+	else{
+		removeArtistPrivileges();
+		$('#txtAreaChat').append("[Game]" + data.username  + " is drawing this round." + "\n");
+	}	
+});	
 
 socket.on('draw', function(data){
 	canvas.loadFromJSON(data);
@@ -106,5 +111,19 @@ function generateRandomUser(){
 	var num = (Math.floor((Math.random() * 100) + 1)).toString();
 	var user = "guest_user" + num;
 	return user;
+}
+
+function addArtistPrivileges(){
+	$("#isDrawing").html("You are drawing.");
+	$(".drawingTools").show();
+	canvas.isDrawingMode = true;
+	canvas.hoverCursor = "crosshair";
+}
+
+function removeArtistPrivileges(){
+	$("#isDrawing").html("You are NOT drawing.");
+	$(".drawingTools").hide();
+	canvas.isDrawingMode = false;
+	canvas.hoverCursor = "default";	
 }
 
