@@ -7,7 +7,7 @@ app.use(express.static(__dirname + '/src'));
 app.use(express.static(__dirname + '/node_modules'));
 
 var usernames = [];
-var clients = [];
+var clients = []; // used to broadcast data to a certain user
 var i = 1; // index that keeps track of who is drawing
 
 app.get('/', function(req, res){
@@ -98,17 +98,11 @@ io.on('connection', function(socket){
 	socket.on('next artist on skip', function(data){
 		setNextArtist();
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on skip', usernames[i % usernames.length]);		
+			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length]]);		
 		}	
 	});
 
 });
-
-
-/*function removePlayer(playerName){
-	var user = usernames.indexOf(playerName.username);
-	usernames.splice(user, 1);
-}*/
 
 function removePlayer(playerName){
 	/* Needed a way to get the index of an object inside an array, found this method: 

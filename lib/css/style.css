@@ -9,7 +9,9 @@ body
 }
 
 
-p,label{ color: #008ea8; }
+label{ color: #008ea8; }
+
+p{ color: #D34328; font-weight: bold; text-shadow: 1px 1px black;}
 
 .list-group { width:100%; }
 

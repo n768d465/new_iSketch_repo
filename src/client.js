@@ -34,21 +34,32 @@ socket.on('next artist', function(data){
 		
 	if(data.isDrawing == true){
 		addArtistPrivileges();
+		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+
+		if( isListEmpty() ) {
+			$("#assignedWord").html("Your word is: " + getWord() + ". Remember, drawing letters is NOT allowed.");					
+		}
 	}
 	else{
 		removeArtistPrivileges();
+		//$('#txtAreaChat').append("[Game]" + data.username  + " is drawing this round." + "\n");
+		$("#assignedWord").html("");
+		canvas.clear();		
 	}
 });
 
 socket.on('next artist on skip', function(data){
 	
-	if(data.isDrawing == true){
+	if(data[0].isDrawing == true){
 		addArtistPrivileges();
 		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+		$("#assignedWord").html("Your word is: " + getWord() + ". Remember, drawing letters is NOT allowed.");		
 	}
 	else{
 		removeArtistPrivileges();
-		$('#txtAreaChat').append("[Game]" + data.username  + " is drawing this round." + "\n");
+		$('#txtAreaChat').append("[Game]" + data[1].username  + " is drawing this round." + "\n");
+		$("#assignedWord").html("");
+		canvas.clear();
 	}	
 });	
 
@@ -68,6 +79,8 @@ socket.on('draw', function(data){
 socket.emit('user_joined', "[Server]" + userNameToChat + " has joined the game!");
 socket.emit('add_user', userNameToChat);
 socket.emit('next artist', "Welcome!");
+
+
 
 $(window).on('beforeunload', function(){
     socket.emit('del_user', userNameToChat);
@@ -105,6 +118,7 @@ function refreshPlayerList(name){
 	for(var i = 0; i < name.length; i++){
 		$('#listPlayers').append($('<li class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
 	}
+	
 }
 
 function generateRandomUser(){
@@ -114,16 +128,29 @@ function generateRandomUser(){
 }
 
 function addArtistPrivileges(){
-	$("#isDrawing").html("You are drawing.");
 	$(".drawingTools").show();
 	canvas.isDrawingMode = true;
 	canvas.hoverCursor = "crosshair";
 }
 
 function removeArtistPrivileges(){
-	$("#isDrawing").html("You are NOT drawing.");
 	$(".drawingTools").hide();
 	canvas.isDrawingMode = false;
 	canvas.hoverCursor = "default";	
 }
 
+function getWord(){
+	var rand = (Math.floor((Math.random() * words.length) + 1));
+	return words[rand];
+}
+
+function isListEmpty(){
+	var list = document.getElementsByTagName('li');
+	
+	if(list.length <= 1){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
