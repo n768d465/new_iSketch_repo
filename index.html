@@ -21,7 +21,7 @@
 							<div class = "col-md-10">
 
 								<label for="txtAreaGame">Game</label>
-								<textarea class="form-control" id="txtAreaGame" rows="3"></textarea>
+								<textarea class="form-control" id="txtAreaGame" rows="3" disabled></textarea>
 								<div class = "input-group">
 									<input type = "text" class = "form-control" id = "txtGame">
 									<div class = "input-group-btn">
@@ -52,16 +52,18 @@
 				</div>
 				  
 				<div class = "col-lg-5">
-					<p id = "assignedWord">test</p>
+					<p id = "assignedWord"></p>
+					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
+					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
 					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
 					
-					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
-					<input type = "color" class = "drawingTools" id = "colors"/>
 					
 					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
-					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%"><br>
+					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
 					
-					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
+					<label for = "colors">Switch Color</label>
+					<input type = "color" class = "drawingTools" id = "colors"/>
+
 				</div>
 				
 				
@@ -74,8 +76,8 @@
 	<script src = "socket.io/socket.io.js"></script>
 	<script src = "jquery-3.1.1.js"></script>
 	<script src = "fabric.js"></script>
+	<script src = "words.js"></script>
 	<script src = "canvas.js"></script>
 	<script src = "client.js"></script>
-	<script src = "words.js"></script>
 
 </html>

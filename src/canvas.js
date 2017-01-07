@@ -6,8 +6,6 @@ canvas.freeDrawingBrush.width = 4;
 var changeColor = $('#colors');
 var changeWidth = $('#lineWidth');
 
-//var words = ["brick", "house", "cat", "dog", "garlic", "mailbox"];
-
 
 colors.onchange = function(){
 	canvas.freeDrawingBrush.color = this.value;
@@ -24,5 +22,5 @@ $('#btnClearCanvas').click(function(){
 });
 
 $('#btnSkip').click(function(name){
-	socket.emit('next artist on skip');
+	socket.emit('next artist on skip', getWord());
 });

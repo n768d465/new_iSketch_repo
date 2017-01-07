@@ -10,6 +10,9 @@ var usernames = [];
 var clients = []; // used to broadcast data to a certain user
 var i = 1; // index that keeps track of who is drawing
 
+var word_history = [];
+var wordIndex = 0;
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -45,7 +48,7 @@ io.on('connection', function(socket){
 		}
 		
 		
-		console.log(usernames);
+		//console.log(usernames);
 		io.emit('add_user',usernames); 
 	});
   
@@ -64,12 +67,29 @@ io.on('connection', function(socket){
   
 	socket.on('del_user', function(name){
 		removePlayer(name);
-		console.log(usernames);
+		//console.log(usernames);
 		io.emit('del_user', usernames);  
 	});
 	
-	socket.on('game message', function(msg){
-		io.emit('game message', msg);
+	socket.on('game message', function(name, msg, points){
+		
+		// what a headache.
+		for(var i = 0; i < usernames.length; i++){
+			
+			if(name == usernames[i].username){
+				if(msg == word_history[wordIndex]){
+					usernames[i].points += 10;
+					io.emit('game message', name, msg, word_history[wordIndex], usernames[i].points, usernames)
+					console.log("Points for " + usernames[i].username + ": " + usernames[i].points);					
+				}
+				else{
+					io.emit('game message', name, msg, word_history[wordIndex]);
+				}
+				
+
+			}
+		}
+		
 	});
   
 });
@@ -82,26 +102,33 @@ http.listen(3000, function(){
 io.on('connection', function(socket){
 	
 	clients.push(socket.id);
-	console.log(clients);
+	//console.log(clients);
 
     socket.on('draw', function(data){
         io.emit('draw', data);
     })
 	
-	socket.on('next artist', function(data){
+	socket.on('next artist on load', function(data){
+		word_history.push(data);
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist', usernames[i % usernames.length]);		
+			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history]);
 		}
+		
+		console.log(word_history);
+		console.log(word_history[wordIndex]);
 		
 	});
 	
 	socket.on('next artist on skip', function(data){
 		setNextArtist();
+		word_history.push(data)
+		wordIndex++;
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length]]);		
-		}	
+			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]]);		
+		}
 	});
 
+	
 });
 
 function removePlayer(playerName){
@@ -116,7 +143,5 @@ function setNextArtist(){
 	usernames[i % usernames.length].isDrawing = true;
 	usernames[(i-1) % usernames.length].isDrawing = false;	
 	i += 1;
-	
 }
-
 
