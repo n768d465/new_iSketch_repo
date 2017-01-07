@@ -111,7 +111,7 @@ io.on('connection', function(socket){
 	socket.on('next artist on load', function(data){
 		word_history.push(data);
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history]);
+			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history], wordIndex);
 		}
 		
 		console.log(word_history);
@@ -124,7 +124,7 @@ io.on('connection', function(socket){
 		word_history.push(data)
 		wordIndex++;
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]]);		
+			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]], wordIndex);		
 		}
 	});
 

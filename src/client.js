@@ -41,24 +41,24 @@ socket.on('add_user', function(name){
 	refreshPlayerList(name);
 });
 
-socket.on('next artist on load', function(data){
+socket.on('next artist on load', function(data, index){
 	
 	if(data[0].isDrawing == true){
 		addArtistPrivileges();
 		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
-		$("#assignedWord").html("Your word is: " + data[1][0] + ". Remember, drawing letters is NOT allowed.");						
+		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");						
 	}
 	else{
 		removeArtistPrivileges();
 		$('#txtAreaChat').append("[Game]" + data[0].username  + " is drawing this round." + "\n");
-		$("#assignedWord").html(data[1][0]);
+		$("#assignedWord").html(data[1][index]);
 		canvas.clear();	
 	}
 	
 	
 });
 
-socket.on('next artist on skip', function(data){
+socket.on('next artist on skip', function(data, index){
 	
 	canvas.clear(); 
 	if(data[0].isDrawing == true){
