@@ -3,6 +3,7 @@ canvas.isDrawingMode = true;
 
 canvas.freeDrawingBrush.width = 4;
 
+
 var changeColor = $('#colors');
 var changeWidth = $('#lineWidth');
 
@@ -24,3 +25,4 @@ $('#btnClearCanvas').click(function(){
 $('#btnSkip').click(function(name){
 	socket.emit('next artist on skip', getWord());
 });
+

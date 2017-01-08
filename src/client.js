@@ -6,6 +6,7 @@ var word = "";
 userLabel.innerHTML = "Your username:  " + userName;
 var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
 
+
 socket.on('user_joined', function(msg){
 	$('#txtAreaChat').append(msg + '\n')
 });
@@ -23,8 +24,8 @@ socket.on('game message', function(name, msg, word, points, usernames){
 	if(msg == word){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");	
 		$('.list-group-item').remove();
-		//$('#listPlayers').append($('<li class = "list-group-item">').text(name+ " " + "(" + points + ")"));
 		refreshPlayerList(usernames);
+		
 
 	}
 	else{
@@ -45,12 +46,12 @@ socket.on('next artist on load', function(data, index){
 	
 	if(data[0].isDrawing == true){
 		addArtistPrivileges();
-		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+		//$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
 		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");						
 	}
 	else{
 		removeArtistPrivileges();
-		$('#txtAreaChat').append("[Game]" + data[0].username  + " is drawing this round." + "\n");
+		$('#txtAreaChat').append("[Game] " + data[0].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html(data[1][index]);
 		canvas.clear();	
 	}
@@ -68,7 +69,7 @@ socket.on('next artist on skip', function(data, index){
 	}
 	else{
 		removeArtistPrivileges();
-		$('#txtAreaChat').append("[Game]" + data[1].username  + " is drawing this round." + "\n");
+		$('#txtAreaChat').append("[Game] " + data[1].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html(data[2]);
 	}	
 });	
@@ -89,17 +90,16 @@ socket.emit('add_user', userNameToChat);
 socket.emit('next artist on load', getWord());
 
 
-
-
 $(window).on('beforeunload', function(){
     socket.emit('del_user', userNameToChat);
-	socket.emit('user_left', "[Server]" + userNameToChat + " has left the game.")
+	socket.emit('user_left', "[Server] " + userNameToChat + " has left the game.")
 });
 
 
 /*********** SOCIAL CHAT ***********/	
 $('#formChat').submit(function(){
 	socket.emit('chat message', updateTime() + $('#txtChat').val());
+	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 	$('#txtChat').val('');
 	return false;
     });
@@ -107,11 +107,12 @@ $('#formChat').submit(function(){
 
 /*********** GAME CHAT ***********/		
 $('#formGame').submit(function(){
+	//document.getElementById("txtAreaGame").scrollTop = document.getElementById("txtAreaGame").scrollHeight 
+	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 	socket.emit('game message', userNameToChat, $('#txtGame').val());
 	$('#txtGame').val('');
 	return false;
     });
-	
 	
 canvas.observe('mouse:up', function(){
 	socket.emit('draw', JSON.stringify(canvas));
@@ -135,7 +136,7 @@ function refreshPlayerList(name){
 }
 
 function generateRandomUser(){
-	var num = (Math.floor((Math.random() * 100) + 1)).toString();
+	var num = (Math.floor((Math.random() * 1000) + 1)).toString();
 	var user = "guest_user" + num;
 	return user;
 }
@@ -159,17 +160,6 @@ function getWord(){
 
 function getListLength(){
 	var list = document.getElementsByTagName('li');
-	
 	return list.length;
 }
 
-/*function stripName(name){
-    var s = name.indexOf(":");
-    return name.slice(s + 2, name.length);
-}
-
-function getName(message){
-	var s = message.indexOf(":");
-    return message.slice(0, s);
-}
-*/

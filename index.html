@@ -11,14 +11,16 @@
 				<div class = "col-lg-7">
                     <div class = "row">
 					
-						<div class = "col-md-2">
+						<div class = "col-md-4">
 							<label for="listPlayers">Players</label>
 							<ul class="list-group list-special" id ="listPlayers">
+
+							
 							</ul>
 						</div>
 					
 						<form id = "formGame">
-							<div class = "col-md-10">
+							<div class = "col-md-8">
 
 								<label for="txtAreaGame">Game</label>
 								<textarea class="form-control" id="txtAreaGame" rows="3" disabled></textarea>
@@ -61,7 +63,7 @@
 					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
 					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
 					
-					<label for = "colors">Switch Color</label>
+					<label for = "colors" class = "drawingTools">Switch Color</label>
 					<input type = "color" class = "drawingTools" id = "colors"/>
 
 				</div>
@@ -79,5 +81,4 @@
 	<script src = "words.js"></script>
 	<script src = "canvas.js"></script>
 	<script src = "client.js"></script>
-
 </html>
