@@ -20,19 +20,10 @@ socket.on('chat message',function (msg){
 });
 
 socket.on('game message', function(name, msg, word, points, usernames){
+	
 	if(msg == word){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");	
-		refreshPlayerList(usernames);
-		
-		/*var count = 4000;
-
-		//var counter = setInterval(timer, 10); //10 will  run it every 100th of a second
-		setInterval(function(){
-			socket.emit ('fire off timer', timer(count));
-		}, 10);*/
-		
-		socket.emit('fire off timer');
-		
+		refreshPlayerList(usernames);	
 	}
 	else{
 		$('#txtAreaGame').append(name + ": " + msg + "\n");	
@@ -41,7 +32,7 @@ socket.on('game message', function(name, msg, word, points, usernames){
 
 socket.on('fire off timer', function(time){
 	
-	var count = 400;
+	var count = 500;
 	var counter = setInterval(function(){
 		timer();
 		document.getElementById("timerOnFirstGuess").innerHTML= count / 100;
@@ -61,12 +52,10 @@ socket.on('fire off timer', function(time){
 	
 	}
 	
-	
-
 });		
 
 socket.on('next artist on time', function(data, index){
-	setTimeout(function(){ startNextRound(data)}, 4000);
+	
 });
 		
 socket.on('del_user', function(name){
@@ -197,4 +186,16 @@ function startNextRound(arr){
 		$('#txtAreaChat').append("[Game] " + arr[1].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html(arr[2]);
 	}	
+}
+
+function getCorrectPlayers(arr){
+	var c = 0;
+	
+	for (var i = 0; i < arr.length; i++){
+		if(arr[i].isCorrect == true){
+			c++; // ayyyy
+		}
+	}
+	
+	return c;
 }

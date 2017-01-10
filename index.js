@@ -79,6 +79,7 @@ io.on('connection', function(socket){
 			if(name == usernames[i].username){
 				if(msg == word_history[wordIndex]){
 					usernames[i].points += 10;
+					usernames[i].isCorrect = true;
 					io.emit('game message', name, msg, word_history[wordIndex], usernames[i].points, usernames)
 				}
 				else{
@@ -122,17 +123,8 @@ io.on('connection', function(socket){
 		setNextRound('next artist on skip', data);
 	});
 	
-	socket.on('next artist on time', function(name, word, newWord){
-		for(var i = 0; i < usernames.length; i++){
-			if(name == usernames[i].username){
-				usernames[i].isCorrect = true;	
-			}
-		}
+	socket.on('next artist on time', function(word, newWord){	
 		
-		if(word == word_history[wordIndex] && getCorrectPlayers(usernames) == 1){
-			//setTimeout(function(){ setNextRound('next artist on time', word); }, 4000);
-			setNextRound('next artist on time', word);
-		}
 	});
 	
 	socket.on('fire off timer', function(time){
@@ -175,4 +167,3 @@ function getCorrectPlayers(arr){
 	
 	return c;
 }
-
