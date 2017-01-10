@@ -7,10 +7,15 @@ canvas.freeDrawingBrush.width = 4;
 var changeColor = $('#colors');
 var changeWidth = $('#lineWidth');
 
+var countOnGuess = 50;
+var countOnRoundStart = 50000;
+var isTimerZero = false;   
+//var counter = setInterval(timerOnCorrectGuess, 10); //10 will  run it every 100th of a second
+
+
 
 colors.onchange = function(){
 	canvas.freeDrawingBrush.color = this.value;
-	console.log(this.color);
 }
 
 lineWidth.onchange = function(){
@@ -26,3 +31,19 @@ $('#btnSkip').click(function(name){
 	socket.emit('next artist on skip', getWord());
 });
 
+
+//var count = 3000;
+
+//var counter = setInterval(timer, 10); //10 will  run it every 100th of a second
+
+function timer(count)
+{
+    if (count <= 0)
+    {
+        clearInterval(counter);
+        return;
+     }
+     count--;
+	 
+	 return count;
+}

@@ -55,6 +55,8 @@ p{ color: #D34328; font-weight: bold; text-shadow: 1px 1px black;}
 
 #btnChat,#btnGame { position:relative; left:1px; height:34px; }
 
+#timerOnRoundStart { position:relative;}
+
 /* http://www.bootply.com/95585 */
 .list-special .list-group-item:first-child { border-top-right-radius: 0px; border-top-left-radius: 0px;}
 

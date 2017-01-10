@@ -36,7 +36,7 @@ io.on('connection', function(socket){
 	});
   
 	socket.on('add_user', function(name){
-		var player = {username: "", points: 0, isDrawing: false, isWinner: false};
+		var player = {username: "", points: 0, isDrawing: false, isWinner: false, isCorrect: false};
 		player.username = name;
 		
 		if(usernames.length == 0){
@@ -80,7 +80,6 @@ io.on('connection', function(socket){
 				if(msg == word_history[wordIndex]){
 					usernames[i].points += 10;
 					io.emit('game message', name, msg, word_history[wordIndex], usernames[i].points, usernames)
-					console.log("Points for " + usernames[i].username + ": " + usernames[i].points);					
 				}
 				else{
 					io.emit('game message', name, msg, word_history[wordIndex]);
@@ -120,14 +119,25 @@ io.on('connection', function(socket){
 	});
 	
 	socket.on('next artist on skip', function(data){
-		setNextArtist();
-		word_history.push(data)
-		wordIndex++;
-		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on skip', [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]], wordIndex);		
+		setNextRound('next artist on skip', data);
+	});
+	
+	socket.on('next artist on time', function(name, word, newWord){
+		for(var i = 0; i < usernames.length; i++){
+			if(name == usernames[i].username){
+				usernames[i].isCorrect = true;	
+			}
+		}
+		
+		if(word == word_history[wordIndex] && getCorrectPlayers(usernames) == 1){
+			//setTimeout(function(){ setNextRound('next artist on time', word); }, 4000);
+			setNextRound('next artist on time', word);
 		}
 	});
-
+	
+	socket.on('fire off timer', function(time){
+		io.emit('fire off timer', time);
+	});
 	
 });
 
@@ -143,5 +153,26 @@ function setNextArtist(){
 	usernames[i % usernames.length].isDrawing = true;
 	usernames[(i-1) % usernames.length].isDrawing = false;	
 	i += 1;
+}
+
+function setNextRound(socket, data){
+	setNextArtist();
+	word_history.push(data)
+	wordIndex++;
+	for(var i = 0; i < clients.length; i++){
+		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]]);
+	}
+}
+
+function getCorrectPlayers(arr){
+	var c = 0;
+	
+	for (var i = 0; i < arr.length; i++){
+		if(arr[i].isCorrect == true){
+			c++; // ayyyy
+		}
+	}
+	
+	return c;
 }
 

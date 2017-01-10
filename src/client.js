@@ -20,20 +20,55 @@ socket.on('chat message',function (msg){
 });
 
 socket.on('game message', function(name, msg, word, points, usernames){
-	
 	if(msg == word){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");	
-		$('.list-group-item').remove();
 		refreshPlayerList(usernames);
 		
+		/*var count = 4000;
 
+		//var counter = setInterval(timer, 10); //10 will  run it every 100th of a second
+		setInterval(function(){
+			socket.emit ('fire off timer', timer(count));
+		}, 10);*/
+		
+		socket.emit('fire off timer');
+		
 	}
 	else{
 		$('#txtAreaGame').append(name + ": " + msg + "\n");	
 	}
 });
-		
+
+socket.on('fire off timer', function(time){
 	
+	var count = 400;
+	var counter = setInterval(function(){
+		timer();
+		document.getElementById("timerOnFirstGuess").innerHTML= count / 100;
+	
+	}, 10)
+
+	function timer()
+	{
+		if (count <= 0)
+		{
+			clearInterval(counter);
+			document.getElementById("timerOnFirstGuess").innerHTML= "asf";
+			return;
+		}
+		count--;
+	 
+	
+	}
+	
+	
+
+});		
+
+socket.on('next artist on time', function(data, index){
+	setTimeout(function(){ startNextRound(data)}, 4000);
+});
+		
 socket.on('del_user', function(name){
 	refreshPlayerList(name);
 });
@@ -44,15 +79,14 @@ socket.on('add_user', function(name){
 
 socket.on('next artist on load', function(data, index){
 	
+	
 	if(data[0].isDrawing == true){
 		addArtistPrivileges();
-		//$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
-		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");						
+		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");
 	}
 	else{
 		removeArtistPrivileges();
 		$('#txtAreaChat').append("[Game] " + data[0].username  + " is drawing this round." + "\n");
-		$("#assignedWord").html(data[1][index]);
 		canvas.clear();	
 	}
 	
@@ -60,18 +94,8 @@ socket.on('next artist on load', function(data, index){
 });
 
 socket.on('next artist on skip', function(data, index){
-	
-	canvas.clear(); 
-	if(data[0].isDrawing == true){
-		addArtistPrivileges();
-		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
-		$("#assignedWord").html("Your word is: " + data[2] + ". Remember, drawing letters is NOT allowed.");		
-	}
-	else{
-		removeArtistPrivileges();
-		$('#txtAreaChat').append("[Game] " + data[1].username  + " is drawing this round." + "\n");
-		$("#assignedWord").html(data[2]);
-	}	
+		startNextRound(data);
+
 });	
 
 socket.on('draw', function(data){
@@ -107,10 +131,13 @@ $('#formChat').submit(function(){
 
 /*********** GAME CHAT ***********/		
 $('#formGame').submit(function(){
-	//document.getElementById("txtAreaGame").scrollTop = document.getElementById("txtAreaGame").scrollHeight 
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+	
 	socket.emit('game message', userNameToChat, $('#txtGame').val());
-	$('#txtGame').val('');
+	socket.emit('next artist on time', userNameToChat, $('#txtGame').val(), getWord());
+	
+	$('#txtGame').val(''); 
+	
 	return false;
     });
 	
@@ -158,8 +185,16 @@ function getWord(){
 	return words[rand];
 }
 
-function getListLength(){
-	var list = document.getElementsByTagName('li');
-	return list.length;
+function startNextRound(arr){
+	canvas.clear(); 
+	if(arr[0].isDrawing == true){
+		addArtistPrivileges();
+		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+		$("#assignedWord").html("Your word is: " + arr[2] + ". Remember, drawing letters is NOT allowed.");		
+	}
+	else{
+		removeArtistPrivileges();
+		$('#txtAreaChat').append("[Game] " + arr[1].username  + " is drawing this round." + "\n");
+		$("#assignedWord").html(arr[2]);
+	}	
 }
-
