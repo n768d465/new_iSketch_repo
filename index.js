@@ -88,10 +88,11 @@ io.on('connection', function(socket){
 				
 
 			}
+				
 		}
-		
+
 	});
-  
+
 });
 
 http.listen(3000, function(){
@@ -119,8 +120,17 @@ io.on('connection', function(socket){
 		
 	});
 	
-	socket.on('next artist on skip', function(data){
-		setNextRound('next artist on skip', data);
+	socket.on('next artist on skip', function(word, newWord){
+		
+		if(word == word_history[wordIndex] && getCorrectPlayers(usernames) == 1){
+			io.emit('fire off timer');
+			setTimeout(function(){
+				setNextRound('next artist on skip', newWord);
+				resetPlayerStatus(usernames);
+			},25000);
+		}
+
+		console.log(newWord);
 	});
 	
 	socket.on('next artist on time', function(word, newWord){	
@@ -153,6 +163,7 @@ function setNextRound(socket, data){
 	wordIndex++;
 	for(var i = 0; i < clients.length; i++){
 		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]]);
+		console.log(clients[i]);
 	}
 }
 
@@ -166,4 +177,10 @@ function getCorrectPlayers(arr){
 	}
 	
 	return c;
+}
+
+function resetPlayerStatus(arr){
+	for(var i = 0; i < arr.length; i++){
+		arr[i].isCorrect = false;
+	}
 }

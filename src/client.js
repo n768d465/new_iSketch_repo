@@ -20,10 +20,11 @@ socket.on('chat message',function (msg){
 });
 
 socket.on('game message', function(name, msg, word, points, usernames){
-	
+
 	if(msg == word){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");	
-		refreshPlayerList(usernames);	
+		refreshPlayerList(usernames);
+	
 	}
 	else{
 		$('#txtAreaGame').append(name + ": " + msg + "\n");	
@@ -83,8 +84,9 @@ socket.on('next artist on load', function(data, index){
 });
 
 socket.on('next artist on skip', function(data, index){
-		startNextRound(data);
-
+	//socket.emit('fire off timer');
+	//setTimeout(function(){ startNextRound(data); },5000);
+	startNextRound(data);
 });	
 
 socket.on('draw', function(data){
@@ -123,8 +125,8 @@ $('#formGame').submit(function(){
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 	
 	socket.emit('game message', userNameToChat, $('#txtGame').val());
-	socket.emit('next artist on time', userNameToChat, $('#txtGame').val(), getWord());
-	
+	socket.emit('next artist on skip', $('#txtGame').val(), getWord());
+
 	$('#txtGame').val(''); 
 	
 	return false;
