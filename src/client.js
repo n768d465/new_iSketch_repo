@@ -2,7 +2,6 @@ var socket = io();
 var userName = prompt("Welcome! Enter your name: ", generateRandomUser());
 var userLabel = document.getElementById('lblUsername');
 var word = "";
-
 userLabel.innerHTML = "Your username:  " + userName;
 var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
 
@@ -19,9 +18,12 @@ socket.on('chat message',function (msg){
 });
 
 socket.on('game message', function(name, msg, word, points, usernames){
+	var alertSound = document.getElementById("alertSound");
 
 	if(msg == word){
-		$('#txtAreaGame').append(name + " has found the word!" + "\n");	
+		$('#txtAreaGame').append(name + " has found the word!" + "\n");
+		$('#txtGame').prop("disabled", true);
+		alertSound.play();	
 		refreshPlayerList(usernames);
 	
 	}
@@ -32,6 +34,10 @@ socket.on('game message', function(name, msg, word, points, usernames){
 
 socket.on('fire off timer', function(time, isClicked){
 	
+	document.getElementById("timer").load();
+	document.getElementById("timer").play();
+
+
 	var counter; 
 	var count = time;
 	$("#timerOnFirstGuess").show();
@@ -47,6 +53,7 @@ socket.on('fire off timer', function(time, isClicked){
 	{
 		if (count <= 0)
 		{
+			document.getElementById("timer").pause();
 			$("#timerOnFirstGuess").hide(); 
 			clearInterval(counter);
 			return;
@@ -61,6 +68,7 @@ socket.on('del_user', function(name){
 });
 	
 socket.on('add_user', function(name){
+	document.getElementById("userJoinedSound").play();
 	refreshPlayerList(name);
 });
 
@@ -194,11 +202,13 @@ function getWord(){
 function startNextRound(arr){
 	canvas.clear();
 	if(arr[0].isDrawing == true){
+		document.getElementById("nextArtistSound").play();
 		addArtistPrivileges();
 		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
 		$("#assignedWord").html("Your word is: " + arr[2] + ". Remember, drawing letters is NOT allowed.");		
 	}
 	else{
+		document.getElementById("endOfRoundSound").play();
 		removeArtistPrivileges();
 		$('#txtAreaChat').append("[Game] " + arr[1].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html("");
