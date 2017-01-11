@@ -32,33 +32,33 @@ socket.on('game message', function(name, msg, word, points, usernames){
 });
 
 socket.on('fire off timer', function(time){
-	
-	var count = 500;
+	console.log(time);
+	var count = time;
+	$("#timerOnFirstGuess").show();
 	var counter = setInterval(function(){
-		timer();
-		document.getElementById("timerOnFirstGuess").innerHTML= count / 100;
-	
+		timer();		
+		$("#timerOnFirstGuess").html(count / 100);
 	}, 10)
 
 	function timer()
 	{
 		if (count <= 0)
 		{
+			$("#timerOnFirstGuess").hide();
 			clearInterval(counter);
-			document.getElementById("timerOnFirstGuess").innerHTML= "asf";
+			return;
+		}
+		else if(isClicked == true){
+			count = 0;
+			$("#timerOnFirstGuess").hide();
+			clearInterval(counter);
 			return;
 		}
 		count--;
-	 
-	
 	}
 	
 });		
-
-socket.on('next artist on time', function(data, index){
 	
-});
-		
 socket.on('del_user', function(name){
 	refreshPlayerList(name);
 });
@@ -68,8 +68,6 @@ socket.on('add_user', function(name){
 });
 
 socket.on('next artist on load', function(data, index){
-	
-	
 	if(data[0].isDrawing == true){
 		addArtistPrivileges();
 		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");
@@ -84,9 +82,12 @@ socket.on('next artist on load', function(data, index){
 });
 
 socket.on('next artist on skip', function(data, index){
-	//socket.emit('fire off timer');
-	//setTimeout(function(){ startNextRound(data); },5000);
 	startNextRound(data);
+	if(isClicked == true){
+		$('#txtAreaChat').append("[Game] " + data[0] + " has skipped the round.\n");
+	}
+	$('#txtAreaChat').append("[Game] Round has ended. The word was: " + data[3] + "\n");
+
 });	
 
 socket.on('draw', function(data){
@@ -186,18 +187,6 @@ function startNextRound(arr){
 	else{
 		removeArtistPrivileges();
 		$('#txtAreaChat').append("[Game] " + arr[1].username  + " is drawing this round." + "\n");
-		$("#assignedWord").html(arr[2]);
+		$("#assignedWord").html("");
 	}	
-}
-
-function getCorrectPlayers(arr){
-	var c = 0;
-	
-	for (var i = 0; i < arr.length; i++){
-		if(arr[i].isCorrect == true){
-			c++; // ayyyy
-		}
-	}
-	
-	return c;
 }

@@ -10,6 +10,7 @@ var usernames = [];
 var clients = []; // used to broadcast data to a certain user
 var i = 1; // index that keeps track of who is drawing
 
+var setTimer;
 var word_history = [];
 var wordIndex = 0;
 
@@ -21,12 +22,10 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
 	console.log('New user connected.');
   
-
 	socket.on('disconnect', function(name){
 		console.log('User disconnected');
 	});
   
-    // This will let everyone know that a new user has joined the game.
 	socket.on('user_joined', function(msg){
 		io.emit('user_joined', msg);
 	});
@@ -36,7 +35,7 @@ io.on('connection', function(socket){
 	});
   
 	socket.on('add_user', function(name){
-		var player = {username: "", points: 0, isDrawing: false, isWinner: false, isCorrect: false};
+		var player = {username: "", points: 0, isDrawing: false, isCorrect: false};
 		player.username = name;
 		
 		if(usernames.length == 0){
@@ -47,8 +46,6 @@ io.on('connection', function(socket){
 			usernames.push(player);	
 		}
 		
-		
-		//console.log(usernames);
 		io.emit('add_user',usernames); 
 	});
   
@@ -72,25 +69,22 @@ io.on('connection', function(socket){
 	});
 	
 	socket.on('game message', function(name, msg, points){
-		
+		var pointsToGive = 10 - getCorrectPlayers(usernames);
+
 		// what a headache.
 		for(var i = 0; i < usernames.length; i++){
 			
 			if(name == usernames[i].username){
 				if(msg == word_history[wordIndex]){
-					usernames[i].points += 10;
+					usernames[i].points += pointsToGive;
 					usernames[i].isCorrect = true;
 					io.emit('game message', name, msg, word_history[wordIndex], usernames[i].points, usernames)
 				}
 				else{
 					io.emit('game message', name, msg, word_history[wordIndex]);
 				}
-				
-
-			}
-				
+			}		
 		}
-
 	});
 
 });
@@ -103,7 +97,6 @@ http.listen(3000, function(){
 io.on('connection', function(socket){
 	
 	clients.push(socket.id);
-	//console.log(clients);
 
     socket.on('draw', function(data){
         io.emit('draw', data);
@@ -123,18 +116,19 @@ io.on('connection', function(socket){
 	socket.on('next artist on skip', function(word, newWord){
 		
 		if(word == word_history[wordIndex] && getCorrectPlayers(usernames) == 1){
-			io.emit('fire off timer');
-			setTimeout(function(){
+			io.emit('fire off timer', 2000);
+			setTimer = setTimeout(function(){
 				setNextRound('next artist on skip', newWord);
 				resetPlayerStatus(usernames);
-			},25000);
+			},20000);
+		}
+		else if(word == true){
+			io.emit('fire off timer', 0);
+			clearTimeout(setTimer);
+			setNextRound('next artist on skip', newWord);
+			resetPlayerStatus(usernames);
 		}
 
-		console.log(newWord);
-	});
-	
-	socket.on('next artist on time', function(word, newWord){	
-		
 	});
 	
 	socket.on('fire off timer', function(time){
@@ -162,8 +156,7 @@ function setNextRound(socket, data){
 	word_history.push(data)
 	wordIndex++;
 	for(var i = 0; i < clients.length; i++){
-		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex]]);
-		console.log(clients[i]);
+		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex], word_history[wordIndex-1]]);
 	}
 }
 
