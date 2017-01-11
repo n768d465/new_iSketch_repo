@@ -27,16 +27,10 @@ $('#btnClearCanvas').click(function(){
 	socket.emit('draw', canvas.clear());
 });
 
-$('#btnSkip').click(function(name){
-    isClicked = true;
-	socket.emit('next artist on skip', isClicked, getWord());
-    isClicked = false;
+$('#btnSkip').click(function(){
+	socket.emit('next artist on button skip', getWord());
 });
 
-
-//var count = 3000;
-
-//var counter = setInterval(timer, 10); //10 will  run it every 100th of a second
 
 function timer(count)
 {

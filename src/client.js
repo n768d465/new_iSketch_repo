@@ -31,26 +31,24 @@ socket.on('game message', function(name, msg, word, points, usernames){
 	}
 });
 
-socket.on('fire off timer', function(time){
-	console.log(time);
+socket.on('fire off timer', function(time, isClicked){
+	
+	var counter; 
 	var count = time;
 	$("#timerOnFirstGuess").show();
-	var counter = setInterval(function(){
+	
+	$("#btnSkip").prop("disabled", true);
+
+	counter = setInterval(function(){
 		timer();		
 		$("#timerOnFirstGuess").html(count / 100);
-	}, 10)
+	}, 10);
 
 	function timer()
 	{
 		if (count <= 0)
 		{
-			$("#timerOnFirstGuess").hide();
-			clearInterval(counter);
-			return;
-		}
-		else if(isClicked == true){
-			count = 0;
-			$("#timerOnFirstGuess").hide();
+			$("#timerOnFirstGuess").hide(); 
 			clearInterval(counter);
 			return;
 		}
@@ -83,10 +81,14 @@ socket.on('next artist on load', function(data, index){
 
 socket.on('next artist on skip', function(data, index){
 	startNextRound(data);
-	if(isClicked == true){
-		$('#txtAreaChat').append("[Game] " + data[0] + " has skipped the round.\n");
-	}
+	$("#btnSkip").prop("disabled", false); 
 	$('#txtAreaChat').append("[Game] Round has ended. The word was: " + data[3] + "\n");
+
+});	
+
+socket.on('next artist on button skip', function(data, index){
+	startNextRound(data);
+	$('#txtAreaChat').append("[Game] Artist has skipped the round. The word was: " + data[3] + "\n");
 
 });	
 
@@ -178,7 +180,7 @@ function getWord(){
 }
 
 function startNextRound(arr){
-	canvas.clear(); 
+	canvas.clear();
 	if(arr[0].isDrawing == true){
 		addArtistPrivileges();
 		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");

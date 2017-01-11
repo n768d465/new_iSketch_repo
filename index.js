@@ -108,9 +108,6 @@ io.on('connection', function(socket){
 			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history], wordIndex);
 		}
 		
-		console.log(word_history);
-		console.log(word_history[wordIndex]);
-		
 	});
 	
 	socket.on('next artist on skip', function(word, newWord){
@@ -122,15 +119,14 @@ io.on('connection', function(socket){
 				resetPlayerStatus(usernames);
 			},20000);
 		}
-		else if(word == true){
-			io.emit('fire off timer', 0);
-			clearTimeout(setTimer);
-			setNextRound('next artist on skip', newWord);
-			resetPlayerStatus(usernames);
-		}
-
 	});
 	
+	socket.on('next artist on button skip', function(word){
+		setNextRound('next artist on button skip', word);
+		resetPlayerStatus(usernames);
+	});
+
+
 	socket.on('fire off timer', function(time){
 		io.emit('fire off timer', time);
 	});
