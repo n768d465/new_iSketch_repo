@@ -11,7 +11,7 @@ body
 
 label{ color: #008ea8; text-shadow: 1px 1px black;}
 
-p{ color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
+p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 
 .list-group { width:100%; }
 
@@ -21,7 +21,7 @@ p{ color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 #listPlayers { font-size: 11px;}
 
 
-#timerOnFirstGuess{ color: #CC0000; }
+#timerOnFirstGuess{ color: #E60000; font-size:22px; }
 
 #txtAreaChat
 {

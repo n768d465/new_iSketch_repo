@@ -110,20 +110,21 @@ io.on('connection', function(socket){
 		
 	});
 	
-	socket.on('next artist on skip', function(word, newWord){
+	socket.on('next artist on round end', function(word, newWord){
 		
 		if(word == word_history[wordIndex] && getCorrectPlayers(usernames) == 1){
 			io.emit('fire off timer', 2000);
 			setTimer = setTimeout(function(){
-				setNextRound('next artist on skip', newWord);
 				resetPlayerStatus(usernames);
+				setNextRound('next artist on round end', newWord);
 			},20000);
 		}
 	});
 	
 	socket.on('next artist on button skip', function(word){
-		setNextRound('next artist on button skip', word);
 		resetPlayerStatus(usernames);
+		setNextRound('next artist on button skip', word);
+
 	});
 
 
@@ -152,7 +153,7 @@ function setNextRound(socket, data){
 	word_history.push(data)
 	wordIndex++;
 	for(var i = 0; i < clients.length; i++){
-		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex], word_history[wordIndex-1]]);
+		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], usernames[(i + 1) % usernames.length], word_history[wordIndex], word_history[wordIndex-1]], usernames);
 	}
 }
 
