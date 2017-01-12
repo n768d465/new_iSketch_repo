@@ -89,8 +89,8 @@ io.on('connection', function(socket){
 
 });
 
-http.listen(3000, function(){
-	console.log('listening on *:3000');
+http.listen(80, function(){
+	console.log('listening on *:80');
 });
 
 // Canvas
@@ -102,6 +102,8 @@ io.on('connection', function(socket){
         io.emit('draw', data);
     })
 	
+
+	// Needs fixing.
 	socket.on('next artist on load', function(data){
 		word_history.push(data);
 		for(var i = 0; i < clients.length; i++){
@@ -135,6 +137,7 @@ io.on('connection', function(socket){
 });
 
 function removePlayer(playerName){
+
 	/* Needed a way to get the index of an object inside an array, found this method: 
 	 * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 	 */

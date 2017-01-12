@@ -1,9 +1,14 @@
-var socket = io();
+var socket = io.connect();
 var userName = prompt("Welcome! Enter your name: ", generateRandomUser());
 var userLabel = document.getElementById('lblUsername');
 var word = "";
 userLabel.innerHTML = "Your username:  " + userName;
 var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
+
+socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
+socket.emit('add_user', userNameToChat);
+socket.emit('next artist on load', getWord());	// Needs fixing.
+
 
 socket.on('user_joined', function(msg){
 	$('#txtAreaChat').append(msg + '\n')
@@ -22,7 +27,6 @@ socket.on('game message', function(name, msg, word, points, usernames){
 
 	if(msg == word){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");
-		$('#txtGame').prop("disabled", true);
 		alertSound.play();	
 		refreshPlayerList(usernames);
 	
@@ -72,6 +76,7 @@ socket.on('add_user', function(name){
 	refreshPlayerList(name);
 });
 
+// Needs fixing.
 socket.on('next artist on load', function(data, index){
 	if(data[0].isDrawing == true){
 		addArtistPrivileges();
@@ -111,11 +116,6 @@ socket.on('draw', function(data){
 	canvas.renderAll();
 
 });
-	
-socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
-socket.emit('add_user', userNameToChat);
-socket.emit('next artist on load', getWord());
-
 
 $(window).on('beforeunload', function(){
     socket.emit('del_user', userNameToChat);
@@ -125,11 +125,14 @@ $(window).on('beforeunload', function(){
 
 /*********** SOCIAL CHAT ***********/	
 $('#formChat').submit(function(){
-	socket.emit('chat message', updateTime() + $('#txtChat').val());
 	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+	
+	socket.emit('chat message', updateTime() + $('#txtChat').val());
+
 	$('#txtChat').val('');
+
 	return false;
-    });
+ });
 
 
 /*********** GAME CHAT ***********/		
@@ -142,7 +145,7 @@ $('#formGame').submit(function(){
 	$('#txtGame').val(''); 
 	
 	return false;
-    });
+});
 	
 canvas.observe('mouse:up', function(){
 	socket.emit('draw', JSON.stringify(canvas));
@@ -154,7 +157,6 @@ function updateTime(){
 	var message = "[" + time + "] " + userNameToChat + ": ";
 	return message;
 }
-
 	
 function refreshPlayerList(name){
 	$('.list-group-item').remove();
