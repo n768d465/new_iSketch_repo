@@ -13,6 +13,8 @@ label{ color: #008ea8; text-shadow: 1px 1px black;}
 
 p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 
+#assignedWord {font-size: 20px;}
+
 .list-group { width:100%; }
 
 .form-group { height:50%; }

@@ -54,17 +54,17 @@
 				</div>
 				  
 				<div class = "col-lg-5" id = "canvasDiv">
-					<p id = "assignedWord"></p>
+					<p id = "assignedWord" align = "center"></p>
 					<p id = "timerOnRoundStart"></p>
 					<p id = "timerOnFirstGuess"></p>
-					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
-					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
+
 					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
 					
 					
 					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
 					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
-					
+					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
+					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>					
 					<label for = "colors" class = "drawingTools">Switch Color</label>
 					<input type = "color" class = "drawingTools" id = "colors"/>
 
@@ -93,7 +93,11 @@
         
         <audio id = "endOfRoundSound">
         	<source src = "sounds\Correct Answer Sound Effect.mp3" type = "audio/mpeg">
-        </audio>                
+        </audio>
+
+        <audio id = "closeAlert">
+        	<source src = "sounds\closeAlert.wav" type = "audio/wav">
+        </audio>                    
 
 
 	</body>

@@ -6,10 +6,9 @@
 var canvas = new fabric.Canvas('c');
 canvas.isDrawingMode = true;
 
+var context = document.getElementById("c").getContext("2d");
+canvas.freeDrawingBrush.color = "#fff";
 canvas.freeDrawingBrush.width = 4;
-
-var changeColor = $('#colors');
-var changeWidth = $('#lineWidth');
 
 colors.onchange = function(){
 	canvas.freeDrawingBrush.color = this.value;
@@ -21,18 +20,18 @@ lineWidth.onchange = function(){
     this.previousSibling.innerHTML = this.value;	
 }
 
-$('#btnClearCanvas').click(function(){
+$('#btnClearCanvas').click(() => {
 	socket.emit('draw', canvas.clear());
 });
 
-$('#btnSkip').click(function(){
+$('#btnSkip').click(() => {
 	socket.emit('next artist on button skip', getWord());
 });
 
 /* Found this timer from a stack overflow question.
  * Unfortunately I cannot find the exact question right now.
  */
-function timer(count)
+function timer()
 {
     if (count <= 0)
     {
@@ -42,4 +41,10 @@ function timer(count)
      count--;
 	 
 	 return count;
+}
+
+function resetCanvas(){
+    canvas.clear();
+    canvas.freeDrawingBrush.width = 4;
+    canvas.freeDrawingBrush.color = "#fff";
 }

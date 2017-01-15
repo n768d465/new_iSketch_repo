@@ -1,13 +1,13 @@
 var socket = io.connect();
 var userName = prompt("Welcome! Enter your name: ", generateRandomUser());
 var userLabel = document.getElementById('lblUsername');
-var word = "";
 userLabel.innerHTML = "Your username:  " + userName;
 var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
 
 socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
 socket.emit('add_user', userNameToChat);
 socket.emit('next artist on load', getWord());	// Needs fixing.
+//socket.emit('draw', JSON.stringify(canvas));
 
 
 socket.on('user_joined', function(msg){
@@ -20,20 +20,28 @@ socket.on('user_left', function(msg){
 	
 socket.on('chat message',function (msg){
 	$('#txtAreaChat').append(msg + '\n');
+	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 });
 
 socket.on('game message', function(name, msg, word, points, usernames){
 	var alertSound = document.getElementById("alertSound");
 
-	if(msg == word){
+	if(msg.includes(word)){
 		$('#txtAreaGame').append(name + " has found the word!" + "\n");
 		alertSound.play();	
 		refreshPlayerList(usernames);
 	
 	}
+	else if(word.startsWith(msg)){
+		console.log("close!");
+		document.getElementById("closeAlert").play();
+		$('#txtAreaGame').append(msg + " is close!" + "\n");
+	}
 	else{
 		$('#txtAreaGame').append(name + ": " + msg + "\n");	
 	}
+	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+
 });
 
 socket.on('fire off timer', function(time, isClicked){
@@ -78,7 +86,7 @@ socket.on('add_user', function(name){
 
 // Needs fixing.
 socket.on('next artist on load', function(data, index){
-	if(data[0].isDrawing == true){
+	if(data[0].isDrawing){
 		addArtistPrivileges();
 		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");
 	}
@@ -95,6 +103,7 @@ socket.on('next artist on round end', function(data, users){
 	$("#btnSkip").prop("disabled", false); 
 	$('#txtAreaGame').append("[Game] Round has ended. The word was: " + data[3] + "\n");
 	$('#txtAreaGame').append("--------------------------------------------------------" + "\n");
+	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 	refreshPlayerList(users);
 
 });	
@@ -103,12 +112,13 @@ socket.on('next artist on button skip', function(data, index){
 	startNextRound(data);
 	$('#txtAreaGame').append("[Game] Artist has skipped the round. The word was: " + data[3] + "\n");
 	$('#txtAreaGame').append("--------------------------------------------------------" + "\n");
+	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 
 });	
 
 socket.on('draw', function(data){
 	canvas.loadFromJSON(data);
-		
+
 	canvas.forEachObject(function(o){
 		o.selectable = false;
 	});	
@@ -125,19 +135,14 @@ $(window).on('beforeunload', function(){
 
 /*********** SOCIAL CHAT ***********/	
 $('#formChat').submit(function(){
-	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
-	
 	socket.emit('chat message', updateTime() + $('#txtChat').val());
-
 	$('#txtChat').val('');
-
 	return false;
  });
 
 
 /*********** GAME CHAT ***********/		
 $('#formGame').submit(function(){
-	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 	
 	socket.emit('game message', userNameToChat, $('#txtGame').val());
 	socket.emit('next artist on round end', $('#txtGame').val(), getWord());
@@ -202,18 +207,22 @@ function getWord(){
 }
 
 function startNextRound(arr){
-	canvas.clear();
-	if(arr[0].isDrawing == true){
+	resetCanvas();
+	if(arr[0].isDrawing){
 		document.getElementById("nextArtistSound").play();
 		addArtistPrivileges();
 		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
-		$("#assignedWord").html("Your word is: " + arr[2] + ". Remember, drawing letters is NOT allowed.");		
+		$("#assignedWord").html("Your word is: " + arr[2] + ". Remember, drawing letters is NOT allowed.");	
+		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+	
 	}
 	else{
 		document.getElementById("endOfRoundSound").play();
 		removeArtistPrivileges();
 		$('#txtAreaChat').append("[Game] " + arr[1].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html("");
+		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+
 	}	
 }
 
