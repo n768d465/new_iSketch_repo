@@ -7,7 +7,6 @@ var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
 socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
 socket.emit('add_user', userNameToChat);
 socket.emit('next artist on load', getWord());	// Needs fixing.
-//socket.emit('draw', JSON.stringify(canvas));
 
 
 socket.on('user_joined', function(msg){
@@ -86,9 +85,10 @@ socket.on('add_user', function(name){
 
 // Needs fixing.
 socket.on('next artist on load', function(data, index){
+	
 	if(data[0].isDrawing){
 		addArtistPrivileges();
-		$("#assignedWord").html("Your word is: " + data[1][index] + ". Remember, drawing letters is NOT allowed.");
+		$("#assignedWord").html("Your word is: " + data[1] + ". Remember, drawing letters is NOT allowed.");
 	}
 	else{
 		removeArtistPrivileges();

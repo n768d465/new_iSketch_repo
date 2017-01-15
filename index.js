@@ -59,14 +59,17 @@ io.on('connection', function(socket){
   
 	socket.on('del_user', function(name){
 		removePlayer(name);
-		//console.log(usernames);
+		if(usernames.length == 1){
+			usernames[0].isDrawing = true;
+			setNextRound('next artist on button skip', word_history[wordIndex]);
+		}
+		console.log(usernames);
 		io.emit('del_user', usernames);  
 	});
 	
 	socket.on('game message', function(name, msg, points){
 		var pointsToGive = 10 - getCorrectPlayers(usernames);
 
-		// what a headache.
 		for(var i = 0; i < usernames.length; i++){
 			
 			if(name == usernames[i].username){
@@ -87,8 +90,8 @@ io.on('connection', function(socket){
 
 });
 
-http.listen(80, function(){
-	console.log('listening on *:80');
+http.listen(3000, function(){
+	console.log('listening on *:3000');
 });
 
 // Canvas
@@ -104,9 +107,11 @@ io.on('connection', function(socket){
 	socket.on('next artist on load', function(data){
 		word_history.push(data);
 		for(var i = 0; i < clients.length; i++){
-			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history], wordIndex);
+			io.sockets.in(clients[i]).emit('next artist on load', [usernames[i % usernames.length], word_history[wordIndex], word_history[wordIndex-1]], usernames);
 		}
-		
+
+		console.log(usernames);
+		console.log(clients);
 	});
 	
 	socket.on('next artist on round end', function(word, newWord){
@@ -140,6 +145,7 @@ function removePlayer(playerName){
 	 */
 	var index = usernames.map(function(e) { return e.username; }).indexOf(playerName);
 	usernames.splice(index, 1);
+	clients.splice(index,1);
 }
 
 function setNextArtist(){
@@ -149,7 +155,7 @@ function setNextArtist(){
 }
 
 function setNextRound(socket, data){
-	setNextArtist();
+	if(usernames.length > 1){setNextArtist()};
 	word_history.push(data)
 	wordIndex++;
 	for(var i = 0; i < clients.length; i++){
