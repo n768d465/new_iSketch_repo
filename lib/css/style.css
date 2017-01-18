@@ -34,7 +34,7 @@ p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 	border-color:#303030;
  
 	/*color:#91C3DC;*/
-	color: #659CEF;
+	color: #CCCCCC;
 	/*color: #FF5B00;*/ /* color for server messages */
 	text-shadow: 1px 1px black;
 
@@ -50,7 +50,7 @@ p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 	background-color: #E0E0E0;
 	background-color: #484848;
 	border-color:#303030;
-	color: #659CEF;
+	color: #CCCCCC;
 	/*color: #FF5B00;*/ /* color for server messages */
 	text-shadow: 1px 1px black;
 }
