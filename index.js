@@ -35,6 +35,8 @@ io.on('connection', function(socket){
 
 		usernames.push(player);
 		io.emit('add_user',usernames); 
+		console.log(clients);
+
 	});
 
 	socket.on('del_user', function(name){
@@ -45,7 +47,7 @@ io.on('connection', function(socket){
 		removePlayer(name);
 		io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
 		console.log(name + " has left the game.\n");
-
+		console.log(clients);
 	});
 	
   
@@ -106,6 +108,7 @@ io.on('connection', function(socket){
 		}
 
 		console.log(usernames);
+		console.log(word_history);
 	});
 	
 	socket.on('next artist on round end', function(word, newWord){
@@ -119,6 +122,8 @@ io.on('connection', function(socket){
 			},20000);
 
 		}
+		console.log(word_history);
+
 	});
 	
 	socket.on('next artist on button skip', function(word){
@@ -151,6 +156,7 @@ function setNextArtist(){
 }
 
 function setNextRound(socket, data){
+	var thisUser = "";
 	setNextArtist();
 	word_history.push(data)
 	wordIndex++;
@@ -158,6 +164,8 @@ function setNextRound(socket, data){
 		io.sockets.in(clients[i]).emit(socket, [usernames[i % usernames.length], word_history[wordIndex], word_history[wordIndex-1]], usernames);
 
 	}
+
+
 }
 
 function getCorrectPlayers(arr){

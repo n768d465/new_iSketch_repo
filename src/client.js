@@ -106,11 +106,12 @@ socket.on('next artist on round end', function(data, users){
 	refreshPlayerList(users);
 });	
 
-socket.on('next artist on button skip', function(data, index){
+socket.on('next artist on button skip', function(data, users){
 	startNextRound(data);
 	$('#txtAreaGame').append("[Game] Artist has skipped the round. A new artist is selected.\n");
 	$('#txtAreaGame').append("--------------------------------------------------------" + "\n");
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+	refreshPlayerList(users);
 });	
 
 socket.on('draw', function(data){
@@ -167,6 +168,9 @@ function refreshPlayerList(name){
 		if(name[i].isCorrect){
 			$('#listPlayers').append($('<li style = "color: red" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
 		}
+		else if(name[i].isDrawing){
+			$('#listPlayers').append($('<li style = "color: green" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));			
+		}
 		else{
 			$('#listPlayers').append($('<li style = "color: black" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
 		}
@@ -204,7 +208,8 @@ function startNextRound(arr){
 	if(arr[0].isDrawing){
 		nextArtistSound.play();
 		addArtistPrivileges();
-		$('#txtAreaChat').append("[Game] You are drawing this round." + "\n");
+		$('#txtAreaGame').append("[Game] You are drawing this round." + "\n");
+		socket.emit("chat message", "[Game] " + arr[0].username  + " is drawing this round.");
 		$("#assignedWord").html("Your word is: " + arr[1] + ". Remember, drawing letters is NOT allowed.");	
 		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 	
@@ -212,7 +217,7 @@ function startNextRound(arr){
 	else{
 		endOfRoundSound.play();
 		removeArtistPrivileges();
-		$('#txtAreaChat').append("[Game] " + arr[0].username  + " is drawing this round." + "\n");
+		//$('#txtAreaChat').append("[Game] " + arr[0].username  + " is drawing this round." + "\n");
 		$("#assignedWord").html("");
 		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 

@@ -1,7 +1,7 @@
 {
-  "name": "socket-chat-example",
+  "name": "new_iSketch",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "remaking the game iSketch with socket io",
   "dependencies": {
     "express": "^4.10.2",
     "socket.io": "^1.7.2"
