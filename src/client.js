@@ -9,12 +9,14 @@ var timerSound = document.getElementById("timer");
 var nextArtistSound = document.getElementById("nextArtistSound");
 var endOfRoundSound = document.getElementById("endOfRoundSound");
 
+socket.emit('add_user', userNameToChat, getWord());
+//socket.emit('next artist on load', getWord());
 socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
-socket.emit('add_user', userNameToChat);
-socket.emit('next artist on load', getWord());
 
-socket.on('user_joined', function(msg){
+socket.on('user_joined', function(msg, users){
 	$('#txtAreaChat').append(msg + '\n')
+	refreshPlayerList(users);
+
 });
 	
 socket.on('user_left', function(msg){
@@ -81,9 +83,11 @@ socket.on('del_user', function(usernames, msg){
 	refreshPlayerList(usernames);
 });
 	
-socket.on('add_user', function(name){
+socket.on('add_user', function(name, word){
 	userJoinedSound.play();
-	refreshPlayerList(name);
+	
+	$("#assignedWord").html(word);
+	
 });
 
 socket.on('next artist on load', function(data, index){	
