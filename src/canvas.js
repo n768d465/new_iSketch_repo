@@ -25,7 +25,7 @@ $('#btnClearCanvas').click(() => {
 });
 
 $('#btnSkip').click(() => {
-	socket.emit('next round', getWord());
+	socket.emit('next round', getWord(), true);
 });
 
 /* Found this timer from a stack overflow question.

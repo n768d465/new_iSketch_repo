@@ -75,15 +75,18 @@ io.on('connection', function(socket){
 			playerStatus(name).isCorrect = true;
 			playerStatus(name).points = pointsToGive;
 
+			io.emit('game message', name + " has found the word!\n", usernames,	playerStatus(name).isCorrect);
+
 			if(getCorrectPlayers(usernames) == 1){
 				io.emit('fire off timer', 500);
+				io.emit('game message', "Round will end in 20 seconds.\n", usernames)
 				setTimeout(function(){
+				io.emit('game message', "The round has ended. The word was: " + word_history[wordIndex] + "\n");
+				io.emit('game message', "===============================================================\n");
 				resetPlayerStatus(usernames);
 				setNextRound(word);
 				}, 5000);
 			}
-
-			io.emit('game message', name + " has found the word!\n", usernames,	playerStatus(name).isCorrect);
 		}
 		else{
 			io.emit('game message', name + ": " + msg + "\n", usernames, playerStatus(name).isCorrect);	
@@ -106,9 +109,15 @@ io.on('connection', function(socket){
     })
 	
 
-    socket.on('next round', function(word){
+    socket.on('next round', function(word, isSkipped){
     	setNextRound(word);
 	
+    	if(isSkipped){
+    		io.emit('game message', "The artist has skipped the round.\n", usernames);
+    		io.emit('game message', "===============================================================\n",usernames);
+
+    	}
+
 		console.log(usernames);	
     });
 
@@ -147,7 +156,9 @@ function setNextRound(word){
 	io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
 															usernames,
 															"Your word is: " + word_history[wordIndex],
-															usernames[(artistIndex-1) % usernames.length].isDrawing);	
+															usernames[(artistIndex-1) % usernames.length].isDrawing);
+
+	io.emit('game message', usernames[(artistIndex-1) % usernames.length].username + " is drawing this round.\n", usernames)	
 }
 
 function getCorrectPlayers(arr){

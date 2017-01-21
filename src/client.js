@@ -104,7 +104,6 @@ $(window).on('beforeunload', function(){
 
 socket.on('next round', function(usernames, word, isArtist){
 	$("#btnSkip").prop("disabled", false);
-
 	if(isArtist){
 		addArtistPrivileges();
 		nextArtistSound.play();
@@ -116,7 +115,7 @@ socket.on('next round', function(usernames, word, isArtist){
 	}
 	$("#assignedWord").html(word);
 	refreshPlayerList(usernames);
-
+	resetCanvas();
 });
 
 /*********** SOCIAL CHAT ***********/	
@@ -193,25 +192,3 @@ function getWord(){
 	var rand = (Math.floor((Math.random() * words.length) + 1));
 	return words[rand];
 }
-
-function startNextRound(arr){
-	resetCanvas();
-	if(arr[0].isDrawing){
-		nextArtistSound.play();
-		addArtistPrivileges();
-		$('#txtAreaGame').append("[Game] You are drawing this round." + "\n");
-		socket.emit("chat message", "[Game] " + arr[0].username  + " is drawing this round.");
-		$("#assignedWord").html("Your word is: " + arr[1] + ". Remember, drawing letters is NOT allowed.");	
-		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
-	
-	}
-	else{
-		endOfRoundSound.play();
-		removeArtistPrivileges();
-		//$('#txtAreaChat').append("[Game] " + arr[0].username  + " is drawing this round." + "\n");
-		$("#assignedWord").html("");
-		$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
-
-	}	
-}
-
