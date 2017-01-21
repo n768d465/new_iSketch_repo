@@ -14,6 +14,7 @@ socket.emit('add_user', userNameToChat, getWord());
 socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
 
 socket.on('user_joined', function(msg, users){
+	userJoinedSound.play();
 	$('#txtAreaChat').append(msg + '\n')
 	refreshPlayerList(users);
 
@@ -60,6 +61,7 @@ socket.on('fire off timer', function(time, isClicked){
 			document.getElementById("timer").pause();
 			$("#timerOnFirstGuess").hide(); 
 			clearInterval(counter);
+			resetCanvas();
 			return;
 		}
 		count--;
@@ -74,7 +76,6 @@ socket.on('del_user', function(usernames, msg){
 });
 	
 socket.on('add_user', function(name, word, isArtist){
-	userJoinedSound.play();
 	
 	if(isArtist){
 		addArtistPrivileges();
