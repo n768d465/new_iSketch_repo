@@ -4,6 +4,36 @@
 		<link href = "css\style.css" rel = "stylesheet" />
 	</head>
 	<body>
+
+
+
+	<div class="container">
+  		<div class="modal fade" id="myModal" role="dialog">
+
+  			<div class = "modal-content">
+
+  			<div class = "modal-body">
+  				<p>Welcome! Enter a username below:</p>
+  			</div>
+
+  			<form id = "formModal">
+
+ 					<div class = "input-group">
+						<input type = "text" class = "form-control" id = "txtModal" autofocus>
+					</div>
+					<br>
+					<div class = "input-group-btn">
+						<button type="submit" class="btn btn-primary" id = "btnModal">Enter game</button>
+					</div>					
+  			</form>
+
+  			</div>
+
+  		</div>
+	</div>
+
+
+
 		<br>
 		<div class = "container-fluid">
 			<div class = "row">
@@ -59,9 +89,6 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 				<div class = "col-lg-5" id = "canvasDiv">
 					<p id = "timerOnRoundStart"></p>
 					<p id = "timerOnFirstGuess"></p>
-
-					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
-					
 					
 					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
 					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
@@ -69,6 +96,9 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>					
 					<label for = "colors" class = "drawingTools">Switch Color</label>
 					<input type = "color" class = "drawingTools" id = "colors"/>
+
+					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
+					
 
 				</div>
 				
@@ -106,8 +136,22 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
   
 	<script src = "socket.io/socket.io.js"></script>
 	<script src = "jquery-3.1.1.js"></script>
+	<script src = "bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
 	<script src = "fabric.js"></script>
 	<script src = "words.js"></script>
 	<script src = "canvas.js"></script>
 	<script src = "client.js"></script>
+
+
+	<script>
+	$(document).ready(function(){
+        	//$("#myModal").modal();
+        	$('#myModal').modal({backdrop: 'static'})  
+    	});
+
+
+
+
+	</script>
+
 </html>

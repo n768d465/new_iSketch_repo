@@ -47,13 +47,20 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('del_user', function(name, word){
-		if(playerStatus(name).isDrawing){
-			setNextRound(word);
-		}
-		removePlayer(name);
+		console.log(name);
+		//prevents server crash if someone refreshes before entering the game
+		if(name != "" && usernames.length > 0){
+			if(playerStatus(name).isDrawing){
+			//setNextRound(word);
+			io.emit('next round', usernames, "You word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.", true)
+			}
+			removePlayer(name);
 
-		io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
-		console.log(name + " has left the game.\n");
+			io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
+			console.log(name + " has left the game.");	
+		}
+
+
 	});
 	
   
@@ -115,11 +122,15 @@ io.on('connection', function(socket){
 
     socket.on('next round', function(word, isSkipped){
 	
-    	if(isSkipped){
+    	if(isSkipped && usernames.length > 1){
     		io.emit('game message', "[Notice] The artist has skipped the round.\n", usernames);
     		io.emit('game message', "===============================================================\n",usernames);
+    		setNextRound(word);
+
     	}
-    	if(usernames.length > 1){setNextRound(word);}
+    	else{
+    		io.emit('game message', "You cannot skip because you are the only person in the room.\n", usernames);
+    	}
 
 		console.log(usernames);	
 		console.log(word_history);
@@ -168,7 +179,6 @@ function setNextRound(word){
 
 function getCorrectPlayers(arr){
 	var c = 0;
-	
 	for (var i = 0; i < arr.length; i++){
 		if(arr[i].isCorrect){
 			c++; // ayyyy

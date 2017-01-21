@@ -1,17 +1,22 @@
 var socket = io.connect();
-var userName = prompt("Welcome! Enter your name: ", generateRandomUser());
-var userLabel = document.getElementById('lblUsername');
-userLabel.innerHTML = "Your username:  " + userName;
-var userNameToChat = userLabel.innerHTML.slice(16, userLabel.length)
+var userNameToChat = "";
+$("#txtModal").val(generateRandomUser());
+$('#formModal').submit(function(){
+	userNameToChat = $('#txtModal').val();
+	$('#myModal').modal('hide');
+	socket.emit('add_user', userNameToChat, getWord());
+	socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
+	$("#lblUsername").html("Your username: " + userNameToChat);
+	return false;
+});
+
 var alertSound = document.getElementById("alertSound");
 var userJoinedSound = document.getElementById("userJoinedSound");
 var timerSound = document.getElementById("timer");
 var nextArtistSound = document.getElementById("nextArtistSound");
 var endOfRoundSound = document.getElementById("endOfRoundSound");
 
-socket.emit('add_user', userNameToChat, getWord());
-//socket.emit('next artist on load', getWord());
-socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
+console.log(userNameToChat);
 
 socket.on('user_joined', function(msg, users){
 	userJoinedSound.play();
@@ -30,13 +35,10 @@ socket.on('chat message',function (msg){
 });
 
 socket.on('game message', function(msg, usernames,isCorrect){
-
 	if(isCorrect){alertSound.play();}
 	$("#txtAreaGame").append(msg);
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 	refreshPlayerList(usernames);
-
-
 });
 
 socket.on('fire off timer', function(time, isClicked){
@@ -76,7 +78,6 @@ socket.on('del_user', function(usernames, msg){
 });
 	
 socket.on('add_user', function(name, word, isArtist){
-	
 	if(isArtist){
 		addArtistPrivileges();
 		$("#assignedWord").html(word);
@@ -87,8 +88,6 @@ socket.on('add_user', function(name, word, isArtist){
 		$("#assignedWord").html("");
 
 	}
-
-
 });
 
 socket.on('draw', function(data){
@@ -100,7 +99,11 @@ socket.on('draw', function(data){
 });
 
 $(window).on('beforeunload', function(){
-    socket.emit('del_user', userNameToChat, getWord());
+
+	try{
+	    socket.emit('del_user', userNameToChat, getWord());
+	}
+	catch(e){console.log(e);}
 });
 
 socket.on('next round', function(usernames, word, isArtist){
@@ -122,6 +125,7 @@ socket.on('next round', function(usernames, word, isArtist){
 /*********** SOCIAL CHAT ***********/	
 $('#formChat').submit(function(){
 	socket.emit('chat message', updateTime() + $('#txtChat').val());
+	console.log(userNameToChat);
 	$('#txtChat').val('');
 	return false;
  });

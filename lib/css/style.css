@@ -13,12 +13,24 @@ label{ color: #008ea8; text-shadow: 1px 1px black;}
 
 p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 
+#pModal{}
+
 #assignedWord {font-size: 20px;}
 
 .list-group { width:100%; }
 
 .form-group { height:50%; }
 
+#myModal{
+	width:20%;
+	position:fixed;
+	left: 40%;
+	top: 25%;
+}
+
+.modal-body, .modal-content, #formModal{
+	background: #424242;
+}
 
 #listPlayers { font-size: 11px;}
 
@@ -57,7 +69,13 @@ p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 
 .btn { border-radius: 0 !important; }
 
-#txtChat,#txtGame { border-radius: 0 !important; }
+#txtChat,#txtGame,#txtModal { border-radius: 0 !important; }
+
+#btnModal{
+	left:10px;
+}
+#txtModal{left:10px;}
+
 
 #btnChat,#btnGame { position:relative; left:1px; height:34px; }
 

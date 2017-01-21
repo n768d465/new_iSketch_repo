@@ -48,3 +48,7 @@ function resetCanvas(){
     canvas.freeDrawingBrush.width = 4;
     canvas.freeDrawingBrush.color = "#fff";
 }
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').focus()
+})
