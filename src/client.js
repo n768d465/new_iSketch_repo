@@ -28,22 +28,9 @@ socket.on('chat message',function (msg){
 	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 });
 
-socket.on('game message', function(name, msg, word, points, usernames){
+socket.on('game message', function(msg){
 
-	if(msg.includes(word)){
-		$('#txtAreaGame').append(name + " has found the word!" + "\n");
-		alertSound.play();	
-		refreshPlayerList(usernames);
-	
-	}
-	else if(word.startsWith(msg)){
-		console.log("close!");
-		document.getElementById("closeAlert").play();
-		$('#txtAreaGame').append(msg + " is close!" + "\n");
-	}
-	else{
-		$('#txtAreaGame').append(name + ": " + msg + "\n");	
-	}
+	$("#txtAreaGame").append(msg);
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
 
 });
@@ -83,40 +70,22 @@ socket.on('del_user', function(usernames, msg){
 	refreshPlayerList(usernames);
 });
 	
-socket.on('add_user', function(name, word){
+socket.on('add_user', function(name, word, isArtist){
 	userJoinedSound.play();
 	
-	$("#assignedWord").html(word);
-	
-});
-
-socket.on('next artist on load', function(data, index){	
-	if(data[0].isDrawing){
+	if(isArtist){
 		addArtistPrivileges();
-		$("#assignedWord").html("Your word is: " + data[1] + ". Remember, drawing letters is NOT allowed.");
+		$("#assignedWord").html(word);
+
 	}
 	else{
 		removeArtistPrivileges();
-		canvas.clear();	
-	}	
+		$("#assignedWord").html("");
+
+	}
+
+
 });
-
-socket.on('next artist on round end', function(data, users){
-	startNextRound(data);
-	$("#btnSkip").prop("disabled", false); 
-	$('#txtAreaGame').append("[Game] Round has ended. The word was: " + data[2] + "\n");
-	$('#txtAreaGame').append("--------------------------------------------------------" + "\n");
-	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
-	refreshPlayerList(users);
-});	
-
-socket.on('next artist on button skip', function(data, users){
-	startNextRound(data);
-	$('#txtAreaGame').append("[Game] Artist has skipped the round. A new artist is selected.\n");
-	$('#txtAreaGame').append("--------------------------------------------------------" + "\n");
-	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
-	refreshPlayerList(users);
-});	
 
 socket.on('draw', function(data){
 	canvas.loadFromJSON(data);
@@ -130,6 +99,19 @@ $(window).on('beforeunload', function(){
     socket.emit('del_user', userNameToChat);
 });
 
+socket.on('next round', function(usernames, word, isArtist){
+	if(isArtist){
+		addArtistPrivileges();
+		nextArtistSound.play();
+	}
+	else{
+		removeArtistPrivileges();
+		endOfRoundSound.play();
+
+	}
+	$("#assignedWord").html(word);
+
+});
 
 /*********** SOCIAL CHAT ***********/	
 $('#formChat').submit(function(){
@@ -143,7 +125,6 @@ $('#formChat').submit(function(){
 $('#formGame').submit(function(){
 	
 	socket.emit('game message', userNameToChat, $('#txtGame').val());
-	socket.emit('next artist on round end', $('#txtGame').val(), getWord());
 
 	$('#txtGame').val(''); 
 	

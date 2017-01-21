@@ -39,30 +39,18 @@ io.on('connection', function(socket){
 
 		usernames.push(player);
 		word_history.push(word);
-		//io.emit('user_joined',usernames); 
 
-		if(playerStatus(name).isDrawing){
-			io.sockets.in(playerStatus(name).id).emit(	'add_user',
+		io.sockets.in(playerStatus(name).id).emit('add_user',
 														usernames,
-														"Your word is: " + word_history[wordIndex]);
-		}
-		else{
-			io.sockets.in(playerStatus(name).id).emit(	'add_user',
-														usernames,
-														"");			
-		}
-		
+														"Your word is: " + word_history[wordIndex],
+														playerStatus(name).isDrawing);
 	});
 
 	socket.on('del_user', function(name){
-		if(playerStatus(name).isDrawing){
-			setNextRound('next artist on button skip', word_history[wordIndex])
-		}
 
 		removePlayer(name);
 		io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
 		console.log(name + " has left the game.\n");
-		console.log();
 	});
 	
   
@@ -83,7 +71,7 @@ io.on('connection', function(socket){
 	socket.on('game message', function(name, msg, points){
 		var pointsToGive = 10 - getCorrectPlayers(usernames);
 
-		
+		io.emit('game message', name + ": " + msg + "\n");
 		
 	});
 
@@ -101,6 +89,21 @@ io.on('connection', function(socket){
         io.emit('draw', data);
     })
 	
+
+    socket.on('next round', function(name, word){
+    	setNextRound(word);
+
+		io.sockets.in(usernames[(artistIndex - 2) % usernames.length].id).emit('next round',
+															usernames,
+															"",
+															usernames[(artistIndex-2) % usernames.length].isDrawing);
+			
+		io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
+															usernames,
+															"Your word is: " + word_history[wordIndex],
+															usernames[(artistIndex-1) % usernames.length].isDrawing);		
+    });
+
 
 	socket.on('fire off timer', function(time){
 		io.emit('fire off timer', time);
@@ -123,17 +126,10 @@ function setNextArtist(){
 	artistIndex += 1;
 }
 
-function setNextRound(socket, data){
-	var thisUser = "";
+function setNextRound(word){
 	setNextArtist();
-	word_history.push(data)
+	word_history.push(word)
 	wordIndex++;
-	for(var i = 0; i < usernames.length; i++){
-		io.sockets.in(usernames[i].id).emit(socket, [usernames[i % usernames.length], word_history[wordIndex], word_history[wordIndex-1]], usernames);
-
-	}
-
-
 }
 
 function getCorrectPlayers(arr){

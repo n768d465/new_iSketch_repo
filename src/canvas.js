@@ -25,7 +25,7 @@ $('#btnClearCanvas').click(() => {
 });
 
 $('#btnSkip').click(() => {
-	socket.emit('next artist on button skip', getWord());
+	socket.emit('next round', userNameToChat, getWord());
 });
 
 /* Found this timer from a stack overflow question.
