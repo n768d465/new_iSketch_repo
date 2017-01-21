@@ -28,10 +28,13 @@ socket.on('chat message',function (msg){
 	$('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
 });
 
-socket.on('game message', function(msg){
+socket.on('game message', function(msg, usernames,isCorrect){
 
+	if(isCorrect){alertSound.play();}
 	$("#txtAreaGame").append(msg);
 	$('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+	refreshPlayerList(usernames);
+
 
 });
 
@@ -100,6 +103,8 @@ $(window).on('beforeunload', function(){
 });
 
 socket.on('next round', function(usernames, word, isArtist){
+	$("#btnSkip").prop("disabled", false);
+
 	if(isArtist){
 		addArtistPrivileges();
 		nextArtistSound.play();
@@ -110,6 +115,7 @@ socket.on('next round', function(usernames, word, isArtist){
 
 	}
 	$("#assignedWord").html(word);
+	refreshPlayerList(usernames);
 
 });
 
@@ -124,7 +130,7 @@ $('#formChat').submit(function(){
 /*********** GAME CHAT ***********/		
 $('#formGame').submit(function(){
 	
-	socket.emit('game message', userNameToChat, $('#txtGame').val());
+	socket.emit('game message', userNameToChat, $('#txtGame').val(), getWord());
 
 	$('#txtGame').val(''); 
 	

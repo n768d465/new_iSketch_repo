@@ -68,10 +68,26 @@ io.on('connection', function(socket){
 	});
   
 
-	socket.on('game message', function(name, msg, points){
+	socket.on('game message', function(name, msg, word){
 		var pointsToGive = 10 - getCorrectPlayers(usernames);
 
-		io.emit('game message', name + ": " + msg + "\n");
+		if(msg.includes(word_history[wordIndex])){
+			playerStatus(name).isCorrect = true;
+			playerStatus(name).points = pointsToGive;
+
+			if(getCorrectPlayers(usernames) == 1){
+				io.emit('fire off timer', 500);
+				setTimeout(function(){
+				resetPlayerStatus(usernames);
+				setNextRound(word);
+				}, 5000);
+			}
+
+			io.emit('game message', name + " has found the word!\n", usernames,	playerStatus(name).isCorrect);
+		}
+		else{
+			io.emit('game message', name + ": " + msg + "\n", usernames, playerStatus(name).isCorrect);	
+		}
 		
 	});
 
@@ -90,18 +106,10 @@ io.on('connection', function(socket){
     })
 	
 
-    socket.on('next round', function(name, word){
+    socket.on('next round', function(word){
     	setNextRound(word);
-
-		io.sockets.in(usernames[(artistIndex - 2) % usernames.length].id).emit('next round',
-															usernames,
-															"",
-															usernames[(artistIndex-2) % usernames.length].isDrawing);
-			
-		io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
-															usernames,
-															"Your word is: " + word_history[wordIndex],
-															usernames[(artistIndex-1) % usernames.length].isDrawing);		
+	
+		console.log(usernames);	
     });
 
 
@@ -130,6 +138,16 @@ function setNextRound(word){
 	setNextArtist();
 	word_history.push(word)
 	wordIndex++;
+
+	io.sockets.in(usernames[(artistIndex - 2) % usernames.length].id).emit('next round',
+															usernames,
+															"",
+															usernames[(artistIndex-2) % usernames.length].isDrawing);
+			
+	io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
+															usernames,
+															"Your word is: " + word_history[wordIndex],
+															usernames[(artistIndex-1) % usernames.length].isDrawing);	
 }
 
 function getCorrectPlayers(arr){
