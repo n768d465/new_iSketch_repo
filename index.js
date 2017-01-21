@@ -41,14 +41,14 @@ io.on('connection', function(socket){
 		word_history.push(word);
 
 		io.sockets.in(playerStatus(name).id).emit('add_user',
-														usernames,
-														"Your word is: " + word_history[wordIndex],
-														playerStatus(name).isDrawing);
+			usernames,
+			"Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.",
+			playerStatus(name).isDrawing);
 	});
 
-	socket.on('del_user', function(name){
+	socket.on('del_user', function(name, word){
 		if(playerStatus(name).isDrawing){
-			setNextRound(word_history[word_history]);
+			setNextRound(word);
 		}
 		removePlayer(name);
 
@@ -119,9 +119,10 @@ io.on('connection', function(socket){
     		io.emit('game message', "[Notice] The artist has skipped the round.\n", usernames);
     		io.emit('game message', "===============================================================\n",usernames);
     	}
-    	setNextRound(word);
+    	if(usernames.length > 1){setNextRound(word);}
 
 		console.log(usernames);	
+		console.log(word_history);
     });
 
 
@@ -158,7 +159,7 @@ function setNextRound(word){
 			
 	io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
 															usernames,
-															"Your word is: " + word_history[wordIndex],
+															"Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.",
 															usernames[(artistIndex-1) % usernames.length].isDrawing);
 
 	io.emit('game message', "[Game] " + usernames[(artistIndex-1) % usernames.length].username + " is drawing this round.\n", usernames);
