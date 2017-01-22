@@ -47,17 +47,19 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('del_user', function(name, word){
-		console.log(name);
 		//prevents server crash if someone refreshes before entering the game
 		if(name != "" && usernames.length > 0){
 			if(playerStatus(name).isDrawing){
-			//setNextRound(word);
-			io.emit('next round', usernames, "You word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.", true)
+			setNextRound(word);
+			console.log("Artist index: " + artistIndex);
+
 			}
 			removePlayer(name);
 
 			io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
-			console.log(name + " has left the game.");	
+			console.log(name + " has left the game.");
+			console.log(usernames);	
+
 		}
 
 
@@ -96,6 +98,8 @@ io.on('connection', function(socket){
 					io.emit('game message', "===============================================================\n");
 					resetPlayerStatus(usernames);
 					setNextRound(word);
+					console.log(usernames);
+					console.log("Artist index: " + artistIndex);
 				}, 20000);
 			}
 		}

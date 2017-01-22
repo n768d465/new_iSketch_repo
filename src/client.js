@@ -100,10 +100,8 @@ socket.on('draw', function(data){
 
 $(window).on('beforeunload', function(){
 
-	try{
-	    socket.emit('del_user', userNameToChat, getWord());
-	}
-	catch(e){console.log(e);}
+	socket.emit('del_user', userNameToChat, getWord());
+
 });
 
 socket.on('next round', function(usernames, word, isArtist){
