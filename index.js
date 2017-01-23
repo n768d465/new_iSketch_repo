@@ -49,13 +49,12 @@ io.on('connection', function(socket){
 	socket.on('del_user', function(name, word){
 		//prevents server crash if someone refreshes before entering the game
 		if(name != "" && usernames.length > 0){
+			// what to do when the artist leaves the game
 			if(playerStatus(name).isDrawing){
-			setNextRound(word);
-			console.log("Artist index: " + artistIndex);
-
+				setNextRound(word);
+				artistIndex+= (usernames.length - 1); // this needs to be done and i have no idea why..
 			}
 			removePlayer(name);
-
 			io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
 			console.log(name + " has left the game.");
 			console.log(usernames);	
@@ -98,8 +97,6 @@ io.on('connection', function(socket){
 					io.emit('game message', "===============================================================\n");
 					resetPlayerStatus(usernames);
 					setNextRound(word);
-					console.log(usernames);
-					console.log("Artist index: " + artistIndex);
 				}, 20000);
 			}
 		}
@@ -157,27 +154,31 @@ function removePlayer(playerName){
 }
 
 function setNextArtist(){
-	usernames[artistIndex % usernames.length].isDrawing = true;
-	usernames[(artistIndex-1) % usernames.length].isDrawing = false;	
-	artistIndex += 1;
+	
 }
 
 function setNextRound(word){
-	setNextArtist();
+	//setNextArtist();
+	usernames[artistIndex % usernames.length].isDrawing = true;
+	usernames[(artistIndex-1) % usernames.length].isDrawing = false;
 	word_history.push(word)
 	wordIndex++;
 
-	io.sockets.in(usernames[(artistIndex - 2) % usernames.length].id).emit('next round',
-															usernames,
-															"",
-															usernames[(artistIndex-2) % usernames.length].isDrawing);
-			
 	io.sockets.in(usernames[(artistIndex - 1) % usernames.length].id).emit('next round',
 															usernames,
+															"",
+															false);
+			
+	io.sockets.in(usernames[artistIndex % usernames.length].id).emit('next round',
+															usernames,
 															"Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.",
-															usernames[(artistIndex-1) % usernames.length].isDrawing);
+															true);
 
-	io.emit('game message', "[Game] " + usernames[(artistIndex-1) % usernames.length].username + " is drawing this round.\n", usernames);
+	io.emit('game message', "[Game] " + usernames[artistIndex % usernames.length].username + " is drawing this round.\n", usernames);
+
+	artistIndex += 1;
+
+	console.log("\nIndex: " + artistIndex + "\n");
 
 }
 
