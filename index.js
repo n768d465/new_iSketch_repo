@@ -25,16 +25,16 @@ io.on('connection', function(socket){
 		io.emit('user_joined', msg, usernames);
 		console.log(msg);
 	});
-  
+
 	socket.on('add_user', function(name, word){
-		var player = 	{username: "", 
-						points: 0, 
-						isDrawing: false, 
+		var player = 	{username: "",
+						points: 0,
+						isDrawing: false,
 						isCorrect: false,
 						id: socket.id};
-						
+
 		player.username = name;
-		
+
 		if(usernames.length == 0) { player.isDrawing = true; }
 
 		usernames.push(player);
@@ -55,21 +55,21 @@ io.on('connection', function(socket){
 				artistIndex+= (usernames.length - 1); // this needs to be done and i have no idea why..
 			}
 			removePlayer(name);
-			io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");  
+			io.emit('del_user', usernames, "[Server] " + name + " has left the game.\n");
 			console.log(name + " has left the game.");
-			console.log(usernames);	
+			console.log(usernames);
 
 		}
 
 
 	});
-	
-  
+
+
 });
 
 // Chat sysytem
 io.on('connection', function(socket){
-	
+
 	socket.on('chat message', function(msg){
 		console.log('message: ' + msg);
 	});
@@ -77,7 +77,7 @@ io.on('connection', function(socket){
 	socket.on('chat message', function(msg){
 		io.emit('chat message', msg);
 	});
-  
+
 
 	socket.on('game message', function(name, msg, word){
 		var pointsToGive = 10 - getCorrectPlayers(usernames);
@@ -101,9 +101,9 @@ io.on('connection', function(socket){
 			}
 		}
 		else{
-			io.emit('game message', name + ": " + msg + "\n", usernames, playerStatus(name).isCorrect);	
+			io.emit('game message', name + ": " + msg + "\n", usernames, playerStatus(name).isCorrect);
 		}
-		
+
 	});
 
 });
@@ -114,15 +114,15 @@ http.listen(80, function(){
 
 // Canvas
 io.on('connection', function(socket){
-	
+
 
     socket.on('draw', function(data){
         io.emit('draw', data);
     })
-	
+
 
     socket.on('next round', function(word, isSkipped){
-	
+
     	if(isSkipped && usernames.length > 1){
     		io.emit('game message', "[Notice] The artist has skipped the round.\n", usernames);
     		io.emit('game message', "===============================================================\n",usernames);
@@ -133,7 +133,7 @@ io.on('connection', function(socket){
     		io.emit('game message', "You cannot skip because you are the only person in the room.\n", usernames);
     	}
 
-		console.log(usernames);	
+		console.log(usernames);
 		console.log(word_history);
     });
 
@@ -141,12 +141,12 @@ io.on('connection', function(socket){
 	socket.on('fire off timer', function(time){
 		io.emit('fire off timer', time);
 	});
-	
+
 });
 
 function removePlayer(playerName){
 
-	/* Needed a way to get the index of an object inside an array, found this method: 
+	/* Needed a way to get the index of an object inside an array, found this method:
 	 * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 	 */
 	var index = usernames.map(function(e) { return e.username; }).indexOf(playerName);
@@ -154,7 +154,7 @@ function removePlayer(playerName){
 }
 
 function setNextArtist(){
-	
+
 }
 
 function setNextRound(word){
@@ -168,7 +168,7 @@ function setNextRound(word){
 															usernames,
 															"",
 															false);
-			
+
 	io.sockets.in(usernames[artistIndex % usernames.length].id).emit('next round',
 															usernames,
 															"Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.",
@@ -189,7 +189,7 @@ function getCorrectPlayers(arr){
 			c++; // ayyyy
 		}
 	}
-	
+
 	return c;
 }
 
@@ -206,3 +206,5 @@ function playerStatus(player){
 		}
 	}
 }
+Contact GitHub API Training Shop Blog About
+© 2017 GitHub, Inc. Terms Privacy Security Status Help

@@ -24,7 +24,7 @@
 					<br>
 					<div class = "input-group-btn">
 						<button type="submit" class="btn btn-primary" id = "btnModal">Enter game</button>
-					</div>					
+					</div>
   			</form>
 
   			</div>
@@ -33,11 +33,11 @@
 	</div>
 
 
-
+	<div class = "background" >
 		<br>
 		<div class = "container-fluid">
 			<div class = "row">
-				<div class = "col-lg-7">
+				<div class = "col-lg-6">
                     <div class = "row">
                     	<p id = "assignedWord" align = "center"></p>
 						<div class = "col-md-4">
@@ -45,7 +45,7 @@
 							<ul class="list-group list-special" id ="listPlayers">
 							</ul>
 						</div>
-					
+
 						<form id = "formGame">
 							<div class = "col-md-8">
 
@@ -60,7 +60,7 @@
 						</div>
 						</form>
                     </div>
-					
+
 					<form id = "formChat">
 						<div class="form-group">
                         <label for="txtAreaChat">Social</label>
@@ -74,7 +74,7 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 
                         <div class = "input-group">
 							<input type = "text" class = "form-control" id = "txtChat">
-							
+
 							<div class = "input-group-btn">
 								<button type="submit" class="btn btn-primary" id = "btnChat">Send</button>
 							</div>
@@ -85,26 +85,27 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 
                     </form>
 				</div>
-				  
-				<div class = "col-lg-5" id = "canvasDiv">
+
+				<div class = "col-lg-6" id = "canvasDiv">
 					<p id = "timerOnRoundStart"></p>
 					<p id = "timerOnFirstGuess"></p>
-					
+
 					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
 					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
 					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
-					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>					
+					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
 					<label for = "colors" class = "drawingTools">Switch Color</label>
 					<input type = "color" class = "drawingTools" id = "colors"/>
 
-					<canvas id = "c" width = "800" height = "800" style = "border:1px solid #ffffff"></canvas>
-					
+					<canvas id = "c" width = "600" height = "600" style = "border:1px solid #ffffff"></canvas>
+
 
 				</div>
-				
-				
+
+
           </div>
         </div>
+     </div>
 
 
         <audio id = "alertSound">
@@ -122,18 +123,18 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
         <audio id = "timer">
         	<source src = "sounds\Processed Stopwatch Effect.mp3" type = "audio/mpeg">
         </audio>
-        
+
         <audio id = "endOfRoundSound">
         	<source src = "sounds\Correct Answer Sound Effect.mp3" type = "audio/mpeg">
         </audio>
 
         <audio id = "closeAlert">
         	<source src = "sounds\closeAlert.wav" type = "audio/wav">
-        </audio>                    
+        </audio>
 
 
 	</body>
-  
+
 	<script src = "socket.io/socket.io.js"></script>
 	<script src = "jquery-3.1.1.js"></script>
 	<script src = "bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
@@ -146,11 +147,8 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 	<script>
 	$(document).ready(function(){
         	//$("#myModal").modal();
-        	$('#myModal').modal({backdrop: 'static'})  
+        	$('#myModal').modal({backdrop: 'static'})
     	});
-
-
-
 
 	</script>
 

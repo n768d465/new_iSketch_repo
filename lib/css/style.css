@@ -9,11 +9,16 @@ body
 }
 
 
+html{margin: 0 auto;}
+
 label{ color: #008ea8; text-shadow: 1px 1px black;}
 
-p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
+p { color: #7DBD00; text-shadow: 1px 1px black;}
 
-#pModal{}
+.background{
+	margin: 0 auto;
+	align-content: center;
+	}
 
 #assignedWord {font-size: 20px;}
 
@@ -28,12 +33,18 @@ p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 	top: 25%;
 }
 
+.container-fluid{
+}
+
 .modal-body, .modal-content, #formModal{
 	background: #424242;
 }
 
 #listPlayers { font-size: 11px;}
 
+span{
+	color:white;
+}
 
 #timerOnFirstGuess{ color: #E60000; font-size:22px; }
 
@@ -44,11 +55,12 @@ p { color: #7DBD00; font-weight: bold; text-shadow: 1px 1px black;}
 	height: 100%;
 	background-color: #484848;
 	border-color:#303030;
- 
+
 	/*color:#91C3DC;*/
 	color: #CCCCCC;
 	/*color: #FF5B00;*/ /* color for server messages */
 	text-shadow: 1px 1px black;
+  font-family: Tahoma, Geneva, sans-serif
 
 }
 
