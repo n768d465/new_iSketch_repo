@@ -87,6 +87,7 @@ io.on('connection', function(socket){
                 setTimeout(function(){
                     io.emit('game message', "[Game] The round has ended. The word was: " + word_history[wordIndex] + "\n");
                     io.emit('game message', "-------------------------------------------\n");
+                    io.emit('reset', users);
                     setNextRound();
                 }, 20000);
                 word_history.push(word);
@@ -114,6 +115,7 @@ io.on('connection', function(socket){
             //console.log("SKIP BUTTON PRESSED\n" + artistIndex);
             io.emit('game message', "[Game] The artist has skipped the round.\n");
             io.emit('game message', "-------------------------------------------\n");
+            io.emit('reset', users);
             setNextRound(users);
         }
 

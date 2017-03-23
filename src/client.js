@@ -180,6 +180,12 @@ function refreshPlayerList(name) {
 
 }
 
+socket.on('reset', function(users){
+    $("#txtGame").prop("disabled", false);
+    $("#txtGame").val('');
+
+});
+
 function generateRandomUser() {
     var num = (Math.floor((Math.random() * 1000) + 1)).toString();
     var user = "guest_user" + num;
@@ -196,8 +202,6 @@ function addArtistPrivileges() {
 
 function removeArtistPrivileges() {
     $(".drawingTools").hide();
-    $("#txtGame").val('');
-    $("#txtGame").prop("disabled", false);
     canvas.isDrawingMode = false;
     canvas.hoverCursor = "default";
 }
