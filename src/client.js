@@ -1,14 +1,16 @@
-var socket = io.connect();
-var userNameToChat = "";
+const socket = io.connect();
+var clientName = "";
+
 $("#txtModal").val(generateRandomUser());
+
 $('#formModal').submit(function() {
-    userNameToChat = $('#txtModal').val();
+    clientName = $('#txtModal').val();
     $('#myModal').modal('hide');
 
-    socket.emit('add_user', userNameToChat, getWord());
-    socket.emit('user_joined', "[Server] " + userNameToChat + " has joined the game!");
+    socket.emit('add user', clientName, getWord());
+    socket.emit('chat message', "[Server] " + clientName + " has joined the game!");
 
-    $("#lblUsername").html("Your username: " + userNameToChat);
+    $("#lblUsername").html("Your username: " + clientName);
     return false;
 });
 
@@ -18,11 +20,9 @@ var timerSound = document.getElementById("timer");
 var nextArtistSound = document.getElementById("nextArtistSound");
 var endOfRoundSound = document.getElementById("endOfRoundSound");
 
-socket.on('user_joined', function(msg, users) {
+socket.on('user joined', function(users) {
     userJoinedSound.play();
-    $('#txtAreaChat').append(msg + '\n')
     refreshPlayerList(users);
-
 });
 
 socket.on('user_left', function(msg) {
@@ -41,6 +41,17 @@ socket.on('game message', function(msg, usernames, isCorrect) {
     $("#txtAreaGame").append(msg);
     $('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
     refreshPlayerList(usernames);
+});
+
+socket.on('private game message ', function(isCorrect, skipped){
+    if(isCorrect){
+        $("#txtGame").val("You got the word! You can speak here again once the round ends.")
+        $("#txtGame").prop("disabled", true);
+    }
+    if(skipped){
+        $("#txtAreaGame").append("You cannot skip because you are the only person in the room.\n");
+    }
+
 });
 
 socket.on('fire off timer', function(time, isClicked) {
@@ -71,22 +82,20 @@ socket.on('fire off timer', function(time, isClicked) {
 
 });
 
-socket.on('del_user', function(usernames, msg) {
-    $("#txtAreaChat").append(msg);
-    $('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+socket.on('remove user', function(usernames, msg) {
     refreshPlayerList(usernames);
 });
 
-socket.on('add_user', function(name, word, isArtist) {
-    if (isArtist) {
+socket.on('add user', function(users, word, isDrawing) {
+    if(isDrawing){
         addArtistPrivileges();
         $("#assignedWord").html(word);
-
-    } else {
-        removeArtistPrivileges();
-        $("#assignedWord").html("");
-
     }
+    else{
+        $("#assignedWord").html("");
+        removeArtistPrivileges();
+    }
+
 });
 
 socket.on('draw', function(data) {
@@ -98,11 +107,19 @@ socket.on('draw', function(data) {
 });
 
 $(window).on('beforeunload', function() {
-    socket.emit('del_user', userNameToChat, getWord());
+    if(clientName !== ""){
+        removeUser();
+    }
 });
 
-socket.on('next round', function(word, isArtist) {
+
+var removeUser = function(){
+    socket.emit('remove user', clientName, getWord());
+}
+
+socket.on('next round', function(usernames, word, isArtist) {
     $("#btnSkip").prop("disabled", false);
+
     if (isArtist) {
         addArtistPrivileges();
         nextArtistSound.play();
@@ -119,14 +136,14 @@ socket.on('next round', function(word, isArtist) {
 /*********** SOCIAL CHAT ***********/
 $('#formChat').submit(function() {
     socket.emit('chat message', updateTime() + $('#txtChat').val());
-    console.log(userNameToChat);
+    console.log(clientName);
     $('#txtChat').val('');
     return false;
 });
 
 /*********** GAME CHAT ***********/
 $('#formGame').submit(function() {
-    socket.emit('game message', userNameToChat, $('#txtGame').val(), getWord());
+    socket.emit('game message', clientName, $('#txtGame').val(), getWord());
     $('#txtGame').val('');
     return false;
 });
@@ -138,12 +155,14 @@ canvas.observe('mouse:up', function() {
 function updateTime() {
     var date = new Date();
     var time = date.toLocaleTimeString();
-    var message = "[" + time + "] " + userNameToChat + ": ";
+    var message = "[" + time + "] " + clientName + ": ";
     return message;
 }
 
 function refreshPlayerList(name) {
     $('.list-group-item').remove();
+    //$("#txtGame").prop("disabled", false);
+    //$("#txtGame").val('');
 
     name.sort(function(a, b) {
         return b.points - a.points;
@@ -169,6 +188,7 @@ function generateRandomUser() {
 
 function addArtistPrivileges() {
     $(".drawingTools").show();
+    $("#txtGame").val("You cannot speak here since you are the artist.");
     $("#txtGame").prop("disabled", true);
     canvas.isDrawingMode = true;
     canvas.hoverCursor = "crosshair";
@@ -176,6 +196,7 @@ function addArtistPrivileges() {
 
 function removeArtistPrivileges() {
     $(".drawingTools").hide();
+    $("#txtGame").val('');
     $("#txtGame").prop("disabled", false);
     canvas.isDrawingMode = false;
     canvas.hoverCursor = "default";

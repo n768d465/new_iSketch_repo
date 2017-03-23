@@ -1,4 +1,4 @@
-/* Some of these functions come from here: 
+/* Some of these functions come from here:
  * http://fabricjs.com/freedrawing
  */
 
@@ -17,7 +17,7 @@ colors.onchange = function(){
 
 lineWidth.onchange = function(){
     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
-    this.previousSibling.innerHTML = this.value;	
+    this.previousSibling.innerHTML = this.value;
 }
 
 $('#btnClearCanvas').click(() => {
@@ -25,7 +25,7 @@ $('#btnClearCanvas').click(() => {
 });
 
 $('#btnSkip').click(() => {
-	socket.emit('next round', getWord(), true);
+	socket.emit('skip round', clientName, getWord());
 });
 
 /* Found this timer from a stack overflow question.
@@ -39,7 +39,7 @@ function timer()
         return;
      }
      count--;
-	 
+
 	 return count;
 }
 
