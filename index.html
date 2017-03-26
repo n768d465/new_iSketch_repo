@@ -91,15 +91,17 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
 					<p id = "timerOnRoundStart"></p>
 					<p id = "timerOnFirstGuess"></p>
 
-					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
-					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
+
 					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
 					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
-					<label for = "colors" class = "drawingTools">Switch Color</label>
-					<input type = "color" class = "drawingTools" id = "colors"/>
+
 
 					<canvas id = "c" width = "600" height = "600" style = "border:1px solid #ffffff"></canvas>
+					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
 
+					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
+					<label for = "colors" class = "drawingTools">Switch Color</label>
+					<input type = "color" class = "drawingTools" id = "colors"/>
 
 				</div>
 
@@ -150,6 +152,12 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
         	//$("#myModal").modal();
         	$('#myModal').modal({backdrop: 'static'})
     	});
+
+	$(window).on('beforeunload', function() {
+		if(clientName !== ""){
+		    removeUser();
+		}
+	});
 
 	</script>
 

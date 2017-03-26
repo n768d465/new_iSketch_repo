@@ -52,13 +52,13 @@ io.on('connection', function(socket){
         removePlayer(name);
 
         if(isDrawing && users.length > 0){
-            //console.log("SDFSDF");
+            console.log("I AM THE ARTIST AND DITCHING YOU ALL HAHAHAHA\n");
+            if(users.length == 0){artistIndex = 0;}
+            else{artistIndex = users.length;}
             setNextRound();
         }
 
-        if(users.length == 0){artistIndex = 0;}
-
-        word_history.push(word);
+        //word_history.push(word);
 
         io.emit('remove user', users);
         io.emit('chat message', "[Server] " + name + " has left the game.\n");
@@ -87,10 +87,9 @@ io.on('connection', function(socket){
                 setTimeout(function(){
                     io.emit('game message', "[Game] The round has ended. The word was: " + word_history[wordIndex] + "\n");
                     io.emit('game message', "-------------------------------------------\n");
-                    io.emit('reset', users);
+                    word_history.push(word);
                     setNextRound();
                 }, 20000);
-                word_history.push(word);
 
             }
 
@@ -112,10 +111,8 @@ io.on('connection', function(socket){
         else
         {
             word_history.push(word);
-            //console.log("SKIP BUTTON PRESSED\n" + artistIndex);
             io.emit('game message', "[Game] The artist has skipped the round.\n");
             io.emit('game message', "-------------------------------------------\n");
-            io.emit('reset', users);
             setNextRound(users);
         }
 
@@ -133,7 +130,7 @@ function removePlayer(playerName){
 
 function setNextRound(){
     resetPlayerStatus(users);
-
+    io.emit('reset', users)
     var oldArtist = artistIndex % users.length;
     var newArtist = (artistIndex + 1) % users.length;
     users[oldArtist].isDrawing = false;
