@@ -32,6 +32,7 @@ socket.on('user_left', function(msg) {
 socket.on('chat message', function(msg) {
     $('#txtAreaChat').append(msg + '\n');
     $('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+
 });
 
 socket.on('game message', function(msg, usernames, isCorrect) {
@@ -106,10 +107,6 @@ socket.on('draw', function(data) {
     });
     canvas.renderAll();
 });
-
-var removeUser = function(){
-    socket.emit('remove user', clientName, getWord());
-}
 
 socket.on('next round', function(usernames, word, isArtist) {
     $("#btnSkip").prop("disabled", false);
@@ -208,4 +205,8 @@ function removeArtistPrivileges() {
 function getWord() {
     var rand = (Math.floor((Math.random() * words.length) + 1));
     return words[rand];
+}
+
+var removeUser = function(){
+    socket.emit('remove user', clientName, getWord());
 }

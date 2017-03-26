@@ -71,7 +71,7 @@
 3. A timer will start when the first person correctly guesses the word. The round will then end in 20 seconds.
 4. After the round ends, a new artist is selected and a new round begins.
 5. The first person to guess correctly gets ten points, second person nine, third gets eight, and so on.
-NOTE: This is still under development and may crash and burn unexpectedly. There is a known bug that prevents the next artist being selected when the current artist leaves while drawing. Thank you for joining, and I hope you have fun! - Neil Dunn, developer.&#013;</textarea>
+NOTE: This is still under development and may crash and burn unexpectedly. If you think something is happening that is not supposed to, please let me know. Thank you for joining, and I hope you have fun! - Neil Dunn, developer.&#013;</textarea>
 
                         <div class = "input-group">
 							<input type = "text" class = "form-control" id = "txtChat">
@@ -153,11 +153,18 @@ NOTE: This is still under development and may crash and burn unexpectedly. There
         	$('#myModal').modal({backdrop: 'static'})
     	});
 
-	$(window).on('beforeunload', function() {
+	/*$(window).on('beforeunload', function() {
 		if(clientName !== ""){
 		    removeUser();
 		}
 	});
+	*/
+
+	window.onunload = function(){
+		if(clientName !== ""){
+			removeUser();
+		}
+	}
 
 	</script>
 

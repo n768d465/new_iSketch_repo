@@ -52,7 +52,6 @@ io.on('connection', function(socket){
         removePlayer(name);
 
         if(isDrawing && users.length > 0){
-            console.log("I AM THE ARTIST AND DITCHING YOU ALL HAHAHAHA\n");
             if(users.length == 0){artistIndex = 0;}
             else{artistIndex = users.length;}
             setNextRound();
@@ -68,6 +67,7 @@ io.on('connection', function(socket){
 
     socket.on('chat message', function(msg){
         io.emit('chat message', msg);
+        console.log(msg);
     });
 
     socket.on('game message', function(name, msg, word){
@@ -97,6 +97,8 @@ io.on('connection', function(socket){
         else{
             io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
         }
+        console.log(msg);
+
     })
 
     socket.on('draw', function(data){
@@ -117,6 +119,8 @@ io.on('connection', function(socket){
         }
 
     })
+
+    
 });
 
 function removePlayer(playerName){
