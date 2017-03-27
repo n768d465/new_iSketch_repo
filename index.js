@@ -31,8 +31,9 @@ io.on('connection', function(socket){
             points: 0,
             isDrawing: false,
             isCorrect: false,
-            id: socket.id
+            id: socket.id,
         };
+
 
         if(users.length == 0) {player.isDrawing = true;}
 
@@ -43,27 +44,6 @@ io.on('connection', function(socket){
         io.emit('user joined', users);
         console.log(users);
     });
-
-
-    socket.on('remove user', function(name, word){
-        word_history.push(word);
-        //console.log("REMOVING PLAYER...\n");
-        var isDrawing = playerStatus(name).isDrawing;
-        removePlayer(name);
-
-        if(isDrawing && users.length > 0){
-            if(users.length == 0){artistIndex = 0;}
-            else{artistIndex = users.length;}
-            setNextRound();
-        }
-
-        //word_history.push(word);
-
-        io.emit('remove user', users);
-        io.emit('chat message', "[Server] " + name + " has left the game.\n");
-
-        console.log(users);
-    })
 
     socket.on('chat message', function(msg){
         io.emit('chat message', msg);
@@ -120,15 +100,34 @@ io.on('connection', function(socket){
 
     })
 
-    
+    socket.on('disconnect', function(){
+        var isDrawing = playerID(socket.id).isDrawing;
+        var name = playerID(socket.id).username;
+
+        console.log("ID: " + socket.id);
+        console.log(name + " has left the game.\n");
+        removePlayerByID(socket.id);
+
+        if(isDrawing && users.length > 0){
+            if(users.length == 0){artistIndex = 0;}
+            else{artistIndex = users.length;}
+            setNextRound();
+        }
+
+        io.emit('remove user', users);
+        io.emit('chat message', "[Server] " + name + " has left the game.\n");
+        console.log(users);
+    });
+
 });
 
-function removePlayer(playerName){
+
+function removePlayerByID(playerName){
 
 	/* Needed a way to get the index of an object inside an array, found this method:
 	 * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 	 */
-	var index = users.map(function(e) { return e.username; }).indexOf(playerName);
+	var index = users.map(function(e) { return e.id; }).indexOf(playerName);
 	users.splice(index, 1);
 }
 
@@ -178,6 +177,14 @@ function resetPlayerStatus(arr){
 function playerStatus(player){
 	for(var i = 0; i < users.length; i++){
 		if (player == users[i].username){
+			return users[i];
+		}
+	}
+}
+
+function playerID(id){
+	for(var i = 0; i < users.length; i++){
+		if (id === users[i].id){
 			return users[i];
 		}
 	}
