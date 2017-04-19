@@ -16,11 +16,12 @@ http.listen(80, function(){
 });
 
 var users = [];
-var artistIndex = 0; // index that keeps track of who is drawing
+var artistIndex = 0;
 
-var setTimer;
+var timer;
 var word_history = [];
 var wordIndex = 0;
+var hint = "";
 
 // User connected or disconnected.
 io.on('connection', function(socket){
@@ -35,10 +36,15 @@ io.on('connection', function(socket){
         };
 
 
-        if(users.length == 0) {player.isDrawing = true;}
+        if(users.length == 0) {
+            player.isDrawing = true;
+        }
+
 
         users.push(player);
         word_history.push(word);
+
+        adjustTimer();
 
         io.sockets.in(player.id).emit('add user', users, getWord(), player.isDrawing);
         io.emit('user joined', users);
@@ -52,32 +58,39 @@ io.on('connection', function(socket){
 
     socket.on('game message', function(name, msg, word){
         var pointsToGive = 10 - getCorrectPlayers(users);
-
+        var player = playerStatus(name);
         if(msg.includes(word_history[wordIndex])){
-            playerStatus(name).isCorrect = true;
-            playerStatus(name).points += pointsToGive;
+            player.isCorrect = true;
+            player.points += pointsToGive;
 
-            io.emit('game message',"[Game] " + name + " has found the word!\n", users, playerStatus(name).isCorrect);
-            io.sockets.in(playerStatus(name).id).emit('private game message ', playerStatus(name).isCorrect, false);
+            io.emit('game message',"[Game] " + name + " has found the word!\n");
+            io.emit('refresh player list', users, player.isCorrect);
+            io.sockets.in(playerStatus(name).id).emit('private game message ', playerStatus(name).isCorrect, false, word_history[wordIndex], pointsToGive);
 
             if(getCorrectPlayers(users) == 1){
-                io.emit('fire off timer', 2000);
-                io.emit('game message',"[Notice] " + "Round will end in 20 seconds.\n", users)
+                //getArtist(users).points += 10;
+
+                io.emit('fire off timer', timer / 10);
+                io.emit('game message',"[Notice] " + "Round will end in " + timer / 1000 + " seconds.\n");
 
                 setTimeout(function(){
                     io.emit('game message', "[Game] The round has ended. The word was: " + word_history[wordIndex] + "\n");
                     io.emit('game message', "-------------------------------------------\n");
-                    word_history.push(word);
                     setNextRound();
-                }, 20000);
+                    word_history.push(word);
 
+                }, timer);
+
+            }
+            else{
+                //getArtist(users).points++;
             }
 
         }
         else{
             io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
         }
-        console.log(msg);
+        console.log(name + ": " + msg);
 
     })
 
@@ -92,25 +105,52 @@ io.on('connection', function(socket){
         }
         else
         {
-            word_history.push(word);
             io.emit('game message', "[Game] The artist has skipped the round.\n");
             io.emit('game message', "-------------------------------------------\n");
             setNextRound(users);
+            word_history.push(word);
+
         }
 
+    });
+
+    socket.on('give hint', function(hintCount, name){
+        let currentWord = word_history[wordIndex];
+
+        if(hintCount === 1){
+            for(let i = 0; i < currentWord.length; i++){
+                hint += "_ ";
+            }
+            io.emit('game message', "[HINT] The word has " + currentWord.length + " letters.\n");
+        }
+        else if (hintCount == 2){
+            var subhint = hint.slice(1, hint.length);
+            hint = currentWord.charAt(0) + subhint
+            io.emit('game message', "[HINT] The word begins with: " + currentWord.charAt(0) + "\n");
+
+        }
+        else if(hintCount == 3){
+            var subhint = hint.slice(3, hint.length);
+            hint = currentWord.charAt(0) + " " + currentWord.charAt(1) + subhint
+            io.emit('game message', "[HINT] The word begins with: " +  currentWord.charAt(0) + currentWord.charAt(1) + "\n");
+        }
+        else{
+            io.sockets.in(playerStatus(name).id).emit('game message', "You cannot give any more hints.\n");
+        }
+        io.emit('give hint', hint);
     })
 
     socket.on('disconnect', function(){
         var isDrawing = playerID(socket.id).isDrawing;
         var name = playerID(socket.id).username;
 
-        console.log("ID: " + socket.id);
         console.log(name + " has left the game.\n");
         removePlayerByID(socket.id);
+        adjustTimer();
 
         if(isDrawing && users.length > 0){
             if(users.length == 0){artistIndex = 0;}
-            else{artistIndex = users.length;}
+            //else{artistIndex--;}
             setNextRound();
         }
 
@@ -132,6 +172,7 @@ function removePlayerByID(playerName){
 }
 
 function setNextRound(){
+    hint = "";
     resetPlayerStatus(users);
     io.emit('reset', users)
     var oldArtist = artistIndex % users.length;
@@ -158,9 +199,9 @@ function setNextRound(){
 
 function getCorrectPlayers(arr){
 	var c = 0;
-	for (var i = 0; i < arr.length; i++){
+	for (let i = 0; i < arr.length; i++){
 		if(arr[i].isCorrect){
-			c++; // ayyyy
+			c++; 
 		}
 	}
 
@@ -175,32 +216,28 @@ function resetPlayerStatus(arr){
 }
 
 function playerStatus(player){
-	for(var i = 0; i < users.length; i++){
-		if (player == users[i].username){
-			return users[i];
-		}
-	}
+    let index = users.map(function(p){return p.username;}).indexOf(player)
+    return users[index];
+    //return users[player];
 }
-
 function playerID(id){
-	for(var i = 0; i < users.length; i++){
-		if (id === users[i].id){
-			return users[i];
-		}
-	}
+    let index = users.map(function(p){return p.id;}).indexOf(id)
+    return users[index];
 }
 
-function getArtists(arr){
-    var a = 0;
+function getArtist(arr){
 	for (var i = 0; i < arr.length; i++){
-		if(arr[i].isCorrect){
-			a++;
+		if(arr[i].isDrawing){
+			return arr[i];
 		}
 	}
-
-    return a;
 }
 
 var getWord = function(){
     return "Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.";
+}
+
+function adjustTimer(){
+    if(users.length <= 2) timer = 5000;
+    else timer = 20000;
 }

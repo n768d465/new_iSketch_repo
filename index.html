@@ -1,171 +1,177 @@
 <html>
-	<head>
-		<link href = "bootstrap-3.3.7-dist\css\bootstrap.min.css" rel = "stylesheet" />
-		<link href = "css\style.css" rel = "stylesheet" />
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-	</head>
-	<body>
+
+<head>
+	<link href="bootstrap-3.3.7-dist\css\bootstrap.min.css" rel="stylesheet" />
+	<link href="css\style.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+
+<body>
 
 
 
 	<div class="container">
-  		<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal fade" id="myModal" role="dialog">
 
-  			<div class = "modal-content">
+			<div class="modal-content">
 
-  			<div class = "modal-body">
-  				<p>Welcome! Enter a username below:</p>
-  			</div>
+				<div class="modal-body">
+					<p>Welcome! Enter a username below:</p>
+				</div>
 
-  			<form id = "formModal">
+				<form id="formModal">
 
- 					<div class = "input-group">
-						<input type = "text" class = "form-control" id = "txtModal" autofocus>
+					<div class="input-group">
+						<input type="text" class="form-control" id="txtModal" autofocus>
 					</div>
 					<br>
-					<div class = "input-group-btn">
-						<button type="submit" class="btn btn-primary" id = "btnModal">Enter game</button>
+					<div class="input-group-btn">
+						<button type="submit" class="btn btn-primary" id="btnModal">Enter game</button>
 					</div>
-  			</form>
+				</form>
 
-  			</div>
+			</div>
 
-  		</div>
+		</div>
 	</div>
 
 
-	<div class = "background" >
+	<div class="background">
 		<br>
-		<div class = "container-fluid">
-			<div class = "row">
-				<div class = "col-lg-6">
-                    <div class = "row">
-                    	<p id = "assignedWord" align = "center"></p>
-						<div class = "col-md-4">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="row">
+						<p id="assignedWord" align="center"></p>
+						<p id="pHint" align="center"></p>
+
+						<div class="col-md-4">
 							<label for="listPlayers">Players (Score)</label>
-							<ul class="list-group list-special" id ="listPlayers">
+							<ul class="list-group list-special" id="listPlayers">
 							</ul>
 						</div>
 
-						<form id = "formGame">
-							<div class = "col-md-8">
+						<form id="formGame">
+							<div class="col-md-8">
 
 								<label for="txtAreaGame">Game</label>
 								<textarea class="form-control" id="txtAreaGame" rows="3" disabled></textarea>
-								<div class = "input-group">
-									<input type = "text" class = "form-control" id = "txtGame">
-									<div class = "input-group-btn">
-										<button type="submit" class="btn btn-primary" id = "btnGame">Send</button>
+								<div class="input-group">
+									<input type="text" class="form-control" id="txtGame">
+									<div class="input-group-btn">
+										<button type="submit" class="btn btn-primary" id="btnGame">Send</button>
 									</div>
 								</div>
-						</div>
+							</div>
 						</form>
-                    </div>
+					</div>
 
-					<form id = "formChat">
+					<form id="formChat">
 						<div class="form-group">
-                        <label for="txtAreaChat">Social</label>
-                        <textarea class="form-control" id="txtAreaChat" rows="3" value = "test" disabled>Welcome! Here's how to play:
+							<label for="txtAreaChat">Social</label>
+							<textarea class="form-control" id="txtAreaChat" rows="3" value="test" disabled>Welcome! Here's how to play:
 1. An artist will be selected to draw a given word on the canvas to the right. (Artist is player highlighted in green.)
 2. Everyone else will guess what that word is under the "Game" text box. Guess one word at a time.
 3. A timer will start when the first person correctly guesses the word. The round will then end in 20 seconds.
 4. After the round ends, a new artist is selected and a new round begins.
 5. The first person to guess correctly gets ten points, second person nine, third gets eight, and so on.
-NOTE: This is still under development and may crash and burn unexpectedly. If you think something is happening that is not supposed to, please let me know. Thank you for joining, and I hope you have fun! - Neil Dunn, developer.&#013;</textarea>
+6. You can chat with other people under the "Chat" text box.
+NOTE: This is still under development and may crash and burn unexpectedly. Some elements may not load correctly if you are using Internet Explorer, Microsoft Edge, or Safari.
+If you think something is happening that is not supposed to, please let me know.
+Thank you for joining, and I hope you have fun! - Neil Dunn, developer.&#013;</textarea>
 
-                        <div class = "input-group">
-							<input type = "text" class = "form-control" id = "txtChat">
+							<div class="input-group">
+								<input type="text" class="form-control" id="txtChat">
 
-							<div class = "input-group-btn">
-								<button type="submit" class="btn btn-primary" id = "btnChat">Send</button>
+								<div class="input-group-btn">
+									<button type="submit" class="btn btn-primary" id="btnChat">Send</button>
+								</div>
 							</div>
-                        </div>
-                        <label id = "lblUsername">Your username: </label>
+							<label id="lblUsername">Your username: </label>
 
-                      </div>
+						</div>
 
-                    </form>
+					</form>
 				</div>
 
-				<div class = "col-lg-6" id = "canvasDiv">
-					<p id = "timerOnRoundStart"></p>
-					<p id = "timerOnFirstGuess"></p>
+				<div class="col-lg-6" id="canvasDiv">
+					<p id="timerOnRoundStart"></p>
+					<p id="timerOnFirstGuess"></p>
+
+					<nobr>
+						<!--button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
+					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button-->
 
 
-					<button class = "btn btn-default drawingTools" id = "btnClearCanvas">Clear</button>
-					<button class = "btn btn-danger drawingTools" id = "btnSkip">Skip</button>
+						<div class="btn-group" role="group" aria-label="...">
+							<button type="button" id="btnClearCanvas" class="btn btn-info drawingTools">Clear</button>
+							<button type="button" id="btnSkip" class="btn btn-danger drawingTools">Skip</button>
+							<button type="button" id="btnHint" class="btn btn-warning drawingTools">Hint</button>
+						</div><br>
+						<div class="btn-group" role="group" aria-label="...">
+							<input id="btnColors" type="button" class="btn btn-default drawingTools" value="🖌️">
+							<input type="color" class="hidden drawingTools" id="colors">
 
+							<button type="button" id="btnEraser" class="btn btn-default drawingTools">&#x25B0;</button>
+							<button type="button" id="btnUndo" class="btn btn-default drawingTools">&#x21A9;</button>
+							<span class="drawingTools">4</span>
+							<input class="drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style="width: 30%">
+						</div>
+						<canvas id="c" width="600" height="600" style="border:2px solid #888"></canvas>
+					</nobr>
 
-					<canvas id = "c" width = "600" height = "600" style = "border:1px solid #ffffff"></canvas>
-					<label for="drawing-line-width" class = "drawingTools">Line width:</label>
-
-					<span class="drawingTools">4</span><input class = "drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style = "width: 10%">
-					<label for = "colors" class = "drawingTools">Switch Color</label>
-					<input type = "color" class = "drawingTools" id = "colors"/>
 
 				</div>
 
 
-          </div>
-        </div>
-     </div>
+			</div>
+		</div>
+	</div>
 
 
-        <audio id = "alertSound">
+	<audio id="alertSound">
         	<source src = "sounds\sms-alert-1-daniel_simon.wav" type = "audio/wav">
         </audio>
 
-        <audio id = "userJoinedSound">
+	<audio id="userJoinedSound">
         	<source src = "sounds\sms-alert-3-daniel_simon.mp3" type = "audio/mpeg">
         </audio>
 
-        <audio id = "nextArtistSound">
+	<audio id="nextArtistSound">
         	<source src = "sounds\sms-alert-4-daniel_simon.wav" type = "audio/wav">
         </audio>
 
-        <audio id = "timer">
+	<audio id="timer">
         	<source src = "sounds\Processed Stopwatch Effect.mp3" type = "audio/mpeg">
         </audio>
 
-        <audio id = "endOfRoundSound">
+	<audio id="endOfRoundSound">
         	<source src = "sounds\Correct Answer Sound Effect.mp3" type = "audio/mpeg">
         </audio>
 
-        <audio id = "closeAlert">
+	<audio id="closeAlert">
         	<source src = "sounds\closeAlert.wav" type = "audio/wav">
         </audio>
 
 
-	</body>
+</body>
 
-	<script src = "socket.io/socket.io.js"></script>
-	<script src = "jquery-3.1.1.js"></script>
-	<script src = "bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
-	<script src = "fabric.js"></script>
-	<script src = "words.js"></script>
-	<script src = "canvas.js"></script>
-	<script src = "client.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script src="jquery-3.1.1.js"></script>
+<script src="bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
+<script src="fabric.js"></script>
+<script src="words.js"></script>
+<script src="canvas.js"></script>
+<script src="client.js"></script>
 
 
-	<script>
-	$(document).ready(function(){
-        	//$("#myModal").modal();
-        	$('#myModal').modal({backdrop: 'static'})
-    	});
-
-	/*$(window).on('beforeunload', function() {
-		if(clientName !== ""){
-		    removeUser();
-		}
+<script>
+	$(document).ready(function() {
+		//$("#myModal").modal();
+		$('#myModal').modal({
+			backdrop: 'static'
+		})
 	});
-	*/
-
-	/*window.onunload = function(){
-		if(clientName !== ""){
-			removeUser();
-		}
-	}
-	*/
-	</script>
+</script>
 
 </html>

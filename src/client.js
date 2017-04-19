@@ -8,7 +8,7 @@ $('#formModal').submit(function() {
     $('#myModal').modal('hide');
 
     socket.emit('add user', clientName, getWord());
-    socket.emit('chat message', "[Server] " + clientName + " has joined the game!");
+    socket.emit('chat message', "--- [Server] " + clientName + " has joined the game! ---");
 
     $("#lblUsername").html("Your username: " + clientName);
     return false;
@@ -35,24 +35,36 @@ socket.on('chat message', function(msg) {
 
 });
 
-socket.on('game message', function(msg, usernames, isCorrect) {
+socket.on('game message', function(msg, usernames, isCorrect, refresh) {
+
+    $("#txtAreaGame").append(msg);
+    $('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+});
+
+socket.on('refresh player list', function(users, isCorrect){
+    refreshPlayerList(users);
+
     if (isCorrect) {
         alertSound.play();
     }
-    $("#txtAreaGame").append(msg);
-    $('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
-    refreshPlayerList(usernames);
-});
+})
 
-socket.on('private game message ', function(isCorrect, skipped){
+socket.on('private game message ', function(isCorrect, skipped, word, points, msg){
     if(isCorrect){
-        $("#txtGame").val("You got the word! You can speak here again once the round ends.");
+        $("#txtGame").val("You got the word: " + word + "!");
         $("#txtGame").css({"background-color": "#84e184"});
         $("#txtGame").prop("disabled", true);
+        $("#btnGame").prop("disabled", true);
+
+        $("#txtAreaGame").append("You got the word: " + word + "!\n");
+        $("#txtAreaGame").append("You earned " + points + " points this round.\n");
+        $("#txtAreaGame").append("You can speak here again once the round ends.\n");
+
     }
     if(skipped){
         $("#txtAreaGame").append("You cannot skip because you are the only person in the room.\n");
     }
+
 
 });
 
@@ -94,7 +106,6 @@ socket.on('add user', function(users, word, isDrawing) {
         $("#assignedWord").html(word);
     }
     else{
-        $("#assignedWord").html("");
         removeArtistPrivileges();
     }
 
@@ -123,6 +134,10 @@ socket.on('next round', function(usernames, word, isArtist) {
     $("#assignedWord").html(word);
     refreshPlayerList(usernames);
     resetCanvas();
+});
+
+socket.on('give hint', function(hint){
+    $("#pHint").html("Hint: " + hint);
 });
 
 /*********** SOCIAL CHAT ***********/
@@ -174,10 +189,15 @@ function refreshPlayerList(name) {
 
 socket.on('reset', function(users){
     $("#txtGame").prop("disabled", false);
+    $("#btnGame").prop("disabled", false);
     $("#txtGame").val('');
     $("#txtGame").css({"background-color": "white"});
+
     removeArtistPrivileges();
     refreshPlayerList(users);
+    
+    hintCount = 0;
+    $("#pHint").html("");
 });
 
 function generateRandomUser() {
@@ -191,6 +211,7 @@ function addArtistPrivileges() {
     $("#txtGame").val("You cannot speak here since you are the artist.");
     $("#txtGame").prop("disabled", true);
     $("#txtGame").css({"background-color": "#e59a9a"});
+    $("#btnGame").prop("disabled", true);
 
     canvas.isDrawingMode = true;
     canvas.hoverCursor = "crosshair";
@@ -200,6 +221,8 @@ function removeArtistPrivileges() {
     $(".drawingTools").hide();
     canvas.isDrawingMode = false;
     canvas.hoverCursor = "default";
+    $("#btnGame").prop("disabled", false);
+
 }
 
 function getWord() {

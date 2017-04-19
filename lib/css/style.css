@@ -6,10 +6,16 @@ body
 	background: -webkit-linear-gradient(top,  #424242 0%,#0e0e0e 99%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to bottom,  #424242 0%,#0e0e0e 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+    width: 100%;
+    height: 100%;
 }
 
 
-html{margin: 0 auto;}
+html{
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+}
 
 label{ color: #008ea8; text-shadow: 1px 1px black; font-weight: 500;}
 
@@ -19,6 +25,12 @@ p { color: #7DBD00; text-shadow: 1px 1px black;}
 	margin: 0 auto;
 	align-content: center;
 	}
+
+#lineWidth{
+    display: inline;
+    magin:0px;
+    padding:0px;
+}
 
 #assignedWord {font-size: 20px;}
 
@@ -89,7 +101,9 @@ span{
 
 }
 
-.btn { border-radius: 0 !important; }
+.hidden{position: absolute; left: -1000000px;}
+
+.btn { border-radius: 0 !important; border-width: 1px;}
 
 #txtChat,#txtGame,#txtModal { border-radius: 0 !important; }
 
@@ -97,6 +111,8 @@ span{
 	left:10px;
 }
 #txtModal{left:10px;}
+
+#pHint{color:#B8860B;  font-size: 20px;}
 
 
 #btnChat,#btnGame { position:relative; left:1px; height:34px; }
