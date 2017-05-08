@@ -23,7 +23,6 @@ var word_history = [];
 var wordIndex = 0;
 var hint = "";
 
-// User connected or disconnected.
 io.on('connection', function(socket){
 
     socket.on('add user', function(name, word){
@@ -59,16 +58,22 @@ io.on('connection', function(socket){
     socket.on('game message', function(name, msg, word){
         var pointsToGive = 10 - getCorrectPlayers(users);
         var player = playerStatus(name);
-        if(msg.includes(word_history[wordIndex])){
+
+        if(msg.toLowerCase().includes(word_history[wordIndex])){
+
             player.isCorrect = true;
             player.points += pointsToGive;
 
             io.emit('game message',"[Game] " + name + " has found the word!\n");
             io.emit('refresh player list', users, player.isCorrect);
-            io.sockets.in(playerStatus(name).id).emit('private game message ', playerStatus(name).isCorrect, false, word_history[wordIndex], pointsToGive);
+
+            io.sockets.in(playerStatus(name).id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n");
+            io.sockets.in(playerStatus(name).id).emit('game message', "You earned " + pointsToGive + " points this round.\n");
+            io.sockets.in(playerStatus(name).id).emit('lock game input', player.isCorrect, false, word_history[wordIndex]);
 
             if(getCorrectPlayers(users) == 1){
                 //getArtist(users).points += 10;
+                getArtist(users).points++;
 
                 io.emit('fire off timer', timer / 10);
                 io.emit('game message',"[Notice] " + "Round will end in " + timer / 1000 + " seconds.\n");
@@ -82,10 +87,6 @@ io.on('connection', function(socket){
                 }, timer);
 
             }
-            else{
-                //getArtist(users).points++;
-            }
-
         }
         else{
             io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
@@ -123,13 +124,13 @@ io.on('connection', function(socket){
             }
             io.emit('game message', "[HINT] The word has " + currentWord.length + " letters.\n");
         }
-        else if (hintCount == 2){
+        else if (hintCount === 2){
             var subhint = hint.slice(1, hint.length);
             hint = currentWord.charAt(0) + subhint
             io.emit('game message', "[HINT] The word begins with: " + currentWord.charAt(0) + "\n");
 
         }
-        else if(hintCount == 3){
+        else if(hintCount === 3){
             var subhint = hint.slice(3, hint.length);
             hint = currentWord.charAt(0) + " " + currentWord.charAt(1) + subhint
             io.emit('game message', "[HINT] The word begins with: " +  currentWord.charAt(0) + currentWord.charAt(1) + "\n");
@@ -171,12 +172,24 @@ function removePlayerByID(playerName){
 	users.splice(index, 1);
 }
 
+function playerStatus(player){
+    let index = users.map(function(p){return p.username;}).indexOf(player)
+    return users[index];
+    //return users[player];
+}
+function playerID(id){
+    let index = users.map(function(p){return p.id;}).indexOf(id)
+    return users[index];
+}
+
 function setNextRound(){
     hint = "";
     resetPlayerStatus(users);
     io.emit('reset', users)
+
     var oldArtist = artistIndex % users.length;
     var newArtist = (artistIndex + 1) % users.length;
+
     users[oldArtist].isDrawing = false;
     users[newArtist].isDrawing = true;
 
@@ -193,7 +206,10 @@ function setNextRound(){
                                                  newWord,
                                                  users[newArtist].isDrawing);
 
-    io.emit('game message', "[Game] " + users[newArtist].username + " is drawing this round\n", users, false);
+    io.emit('game message',
+            "[Game] " + users[newArtist].username + " is drawing this round\n",
+            users,
+            false);
     artistIndex++;
 }
 
@@ -201,7 +217,7 @@ function getCorrectPlayers(arr){
 	var c = 0;
 	for (let i = 0; i < arr.length; i++){
 		if(arr[i].isCorrect){
-			c++; 
+			c++;
 		}
 	}
 
@@ -215,15 +231,6 @@ function resetPlayerStatus(arr){
 	}
 }
 
-function playerStatus(player){
-    let index = users.map(function(p){return p.username;}).indexOf(player)
-    return users[index];
-    //return users[player];
-}
-function playerID(id){
-    let index = users.map(function(p){return p.id;}).indexOf(id)
-    return users[index];
-}
 
 function getArtist(arr){
 	for (var i = 0; i < arr.length; i++){

@@ -14,6 +14,7 @@ $('#formModal').submit(function() {
     return false;
 });
 
+
 var alertSound = document.getElementById("alertSound");
 var userJoinedSound = document.getElementById("userJoinedSound");
 var timerSound = document.getElementById("timer");
@@ -49,16 +50,13 @@ socket.on('refresh player list', function(users, isCorrect){
     }
 })
 
-socket.on('private game message ', function(isCorrect, skipped, word, points, msg){
+socket.on('lock game input', function(isCorrect, skipped, word){
     if(isCorrect){
-        $("#txtGame").val("You got the word: " + word + "!");
         $("#txtGame").css({"background-color": "#84e184"});
         $("#txtGame").prop("disabled", true);
         $("#btnGame").prop("disabled", true);
-
-        $("#txtAreaGame").append("You got the word: " + word + "!\n");
-        $("#txtAreaGame").append("You earned " + points + " points this round.\n");
         $("#txtAreaGame").append("You can speak here again once the round ends.\n");
+        $("#txtGame").val("You found the word: " + word + "!");
 
     }
     if(skipped){
@@ -125,11 +123,11 @@ socket.on('next round', function(usernames, word, isArtist) {
     if (isArtist) {
         addArtistPrivileges();
         nextArtistSound.play();
-    } else {
+    }
+    else {
         removeArtistPrivileges();
         endOfRoundSound.play();
         word = "";
-
     }
     $("#assignedWord").html(word);
     refreshPlayerList(usernames);
@@ -177,11 +175,11 @@ function refreshPlayerList(name) {
 
     for (var i = 0; i < name.length; i++) {
         if (name[i].isCorrect) {
-            $('#listPlayers').append($('<li style = "color: red" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
+            $('#listPlayers').append($('<li style = "color: red" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
         } else if (name[i].isDrawing) {
-            $('#listPlayers').append($('<li style = "color: green" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
+            $('#listPlayers').append($('<li style = "color: green" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
         } else {
-            $('#listPlayers').append($('<li style = "color: black" class = "list-group-item">').text(name[i].username + " " + "(" + name[i].points + ")"));
+            $('#listPlayers').append($('<li style = "color: black" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
         }
     }
 
@@ -195,7 +193,7 @@ socket.on('reset', function(users){
 
     removeArtistPrivileges();
     refreshPlayerList(users);
-    
+
     hintCount = 0;
     $("#pHint").html("");
 });
@@ -218,11 +216,11 @@ function addArtistPrivileges() {
 }
 
 function removeArtistPrivileges() {
-    $(".drawingTools").hide();
     canvas.isDrawingMode = false;
     canvas.hoverCursor = "default";
-    $("#btnGame").prop("disabled", false);
 
+    $(".drawingTools").hide();
+    $("#btnGame").prop("disabled", false);
 }
 
 function getWord() {

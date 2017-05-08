@@ -17,9 +17,9 @@ html{
     height: 100%;
 }
 
-label{ color: #008ea8; text-shadow: 1px 1px black; font-weight: 500;}
+label{ color: #008ea8; text-shadow: 1px 1px black; font-weight: 500; font-family: 'Open Sans', sans-serif;}
 
-p { color: #7DBD00; text-shadow: 1px 1px black;}
+p { color: #7DBD00; text-shadow: 1px 1px black; font-family: 'Open Sans', sans-serif; }
 
 .background{
 	margin: 0 auto;
