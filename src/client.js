@@ -176,9 +176,11 @@ function refreshPlayerList(name) {
     for (var i = 0; i < name.length; i++) {
         if (name[i].isCorrect) {
             $('#listPlayers').append($('<li style = "color: red" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
-        } else if (name[i].isDrawing) {
+        }
+        else if (name[i].isDrawing) {
             $('#listPlayers').append($('<li style = "color: green" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
-        } else {
+        }
+        else {
             $('#listPlayers').append($('<li style = "color: black" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
         }
     }
@@ -212,7 +214,7 @@ function addArtistPrivileges() {
     $("#btnGame").prop("disabled", true);
 
     canvas.isDrawingMode = true;
-    canvas.hoverCursor = "crosshair";
+    canvas.hoverCursor = "pointer";
 }
 
 function removeArtistPrivileges() {

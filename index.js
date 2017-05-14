@@ -168,7 +168,7 @@ function removePlayerByID(playerName){
 	/* Needed a way to get the index of an object inside an array, found this method:
 	 * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 	 */
-	var index = users.map(function(e) { return e.id; }).indexOf(playerName);
+	let index = users.map(function(e) { return e.id; }).indexOf(playerName);
 	users.splice(index, 1);
 }
 
