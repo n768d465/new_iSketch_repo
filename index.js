@@ -50,12 +50,12 @@ io.on('connection', function(socket){
         console.log(users);
     });
 
-    socket.on('chat message', function(msg){
-        io.emit('chat message', msg);
+    socket.on('chat message', function(msg, msgType){
+        io.emit('chat message', msg, msgType);
         console.log(msg);
     });
 
-    socket.on('game message', function(name, msg, word){
+    socket.on('game message', function(name, msg, word, msgType){
         var pointsToGive = 10 - getCorrectPlayers(users);
         var player = playerStatus(name);
 
@@ -64,11 +64,11 @@ io.on('connection', function(socket){
             player.isCorrect = true;
             player.points += pointsToGive;
 
-            io.emit('game message',"[Game] " + name + " has found the word!\n");
+            io.emit('game message',"[Game] " + name + " has found the word!\n", undefined, undefined, 'GAME');
             io.emit('refresh player list', users, player.isCorrect);
 
-            io.sockets.in(playerStatus(name).id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n");
-            io.sockets.in(playerStatus(name).id).emit('game message', "You earned " + pointsToGive + " points this round.\n");
+            io.sockets.in(playerStatus(name).id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", undefined, undefined,'CORRECT-GUESS');
+            io.sockets.in(playerStatus(name).id).emit('game message', "You earned " + pointsToGive + " points this round.\n", undefined, undefined,'CORRECT-GUESS');
             io.sockets.in(playerStatus(name).id).emit('lock game input', player.isCorrect, false, word_history[wordIndex]);
 
             if(getCorrectPlayers(users) == 1){
@@ -76,11 +76,10 @@ io.on('connection', function(socket){
                 getArtist(users).points++;
 
                 io.emit('fire off timer', timer / 10);
-                io.emit('game message',"[Notice] " + "Round will end in " + timer / 1000 + " seconds.\n");
+                io.emit('game message',"[Notice] " + "Round will end in " + timer / 1000 + " seconds.\n", undefined, undefined, 'NOTICE');
 
                 setTimeout(function(){
-                    io.emit('game message', "[Game] The round has ended. The word was: " + word_history[wordIndex] + "\n");
-                    io.emit('game message', "-------------------------------------------\n");
+                    io.emit('game message', "[Game] The round has ended. The word was: " + word_history[wordIndex] + "\n", undefined, undefined, 'GAME');
                     setNextRound();
                     word_history.push(word);
 
@@ -122,18 +121,18 @@ io.on('connection', function(socket){
             for(let i = 0; i < currentWord.length; i++){
                 hint += "_ ";
             }
-            io.emit('game message', "[HINT] The word has " + currentWord.length + " letters.\n");
+            io.emit('game message', "[HINT] The word has " + currentWord.length + " letters.\n", undefined, undefined, 'HINT');
         }
         else if (hintCount === 2){
             var subhint = hint.slice(1, hint.length);
             hint = currentWord.charAt(0) + subhint
-            io.emit('game message', "[HINT] The word begins with: " + currentWord.charAt(0) + "\n");
+            io.emit('game message', "[HINT] The word begins with: " + currentWord.charAt(0) + "\n", undefined, undefined, 'HINT');
 
         }
         else if(hintCount === 3){
             var subhint = hint.slice(3, hint.length);
             hint = currentWord.charAt(0) + " " + currentWord.charAt(1) + subhint
-            io.emit('game message', "[HINT] The word begins with: " +  currentWord.charAt(0) + currentWord.charAt(1) + "\n");
+            io.emit('game message', "[HINT] The word begins with: " +  currentWord.charAt(0) + currentWord.charAt(1) + "\n", undefined, undefined, 'HINT');
         }
         else{
             io.sockets.in(playerStatus(name).id).emit('game message', "You cannot give any more hints.\n");
@@ -209,7 +208,8 @@ function setNextRound(){
     io.emit('game message',
             "[Game] " + users[newArtist].username + " is drawing this round\n",
             users,
-            false);
+            undefined,
+            'GAME');
     artistIndex++;
 }
 

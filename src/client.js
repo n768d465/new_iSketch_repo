@@ -8,7 +8,7 @@ $('#formModal').submit(function() {
     $('#myModal').modal('hide');
 
     socket.emit('add user', clientName, getWord());
-    socket.emit('chat message', "--- [Server] " + clientName + " has joined the game! ---");
+    socket.emit('chat message', "[Server] " + clientName + " has joined the game!", 'SERVER');
 
     $("#lblUsername").html("Your username: " + clientName);
     return false;
@@ -27,19 +27,44 @@ socket.on('user joined', function(users) {
 });
 
 socket.on('user_left', function(msg) {
-    $('#txtAreaChat').append(msg + '\n')
+    $('#socialChatList').append(msg + '\n')
 });
 
-socket.on('chat message', function(msg) {
-    $('#txtAreaChat').append(msg + '\n');
-    $('#txtAreaChat').scrollTop($('#txtAreaChat')[0].scrollHeight);
+socket.on('chat message', function(msg, msgType) {
+    //$('#txtAreaChat').append(msg + '\n');
+
+    switch(msgType){
+        case 'SERVER':
+            $('#socialChatList').append($('<li style = "color:#33ccff" class = "list-group-item chat-list-item">').text(msg));
+            break;
+        default:
+            $('#socialChatList').append($('<li style = "color: #DDDDDD" class = "list-group-item chat-list-item">').text(msg));
+            break;
+
+    }
+    $('#socialChatList').scrollTop($('#socialChatList')[0].scrollHeight);
 
 });
 
-socket.on('game message', function(msg, usernames, isCorrect, refresh) {
+socket.on('game message', function(msg, undefined, undefined, msgType) {
 
-    $("#txtAreaGame").append(msg);
-    $('#txtAreaGame').scrollTop($('#txtAreaGame')[0].scrollHeight);
+    switch(msgType){
+        case 'CORRECT-GUESS':
+            $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
+            break;
+        case 'GAME':
+        case 'NOTICE':
+            $('#gameChatList').append($('<li style = "color: #FF5B00;" class = "list-group-item chat-list-item">').text(msg));
+            break;
+        case 'HINT':
+            $('#gameChatList').append($('<li style = "color: #B8860B;" class = "list-group-item chat-list-item">').text(msg));
+            break;
+        default:
+            $('#gameChatList').append($('<li style = "color: #DDDDDD" class = "list-group-item chat-list-item">').text(msg));
+            break;
+
+    }
+    $('#gameChatList').scrollTop($('#gameChatList')[0].scrollHeight);
 });
 
 socket.on('refresh player list', function(users, isCorrect){
@@ -141,14 +166,13 @@ socket.on('give hint', function(hint){
 /*********** SOCIAL CHAT ***********/
 $('#formChat').submit(function() {
     socket.emit('chat message', updateTime() + $('#txtChat').val());
-    console.log(clientName);
     $('#txtChat').val('');
     return false;
 });
 
 /*********** GAME CHAT ***********/
 $('#formGame').submit(function() {
-    socket.emit('game message', clientName, $('#txtGame').val(), getWord());
+    socket.emit('game message', clientName, $('#txtGame').val(), getWord(), undefined);
     $('#txtGame').val('');
     return false;
 });
@@ -164,24 +188,22 @@ function updateTime() {
     return message;
 }
 
-function refreshPlayerList(name) {
-    $('.list-group-item').remove();
-    //$("#txtGame").prop("disabled", false);
-    //$("#txtGame").val('');
+function refreshPlayerList(userlist) {
+    $('.player-list-item').remove();
 
-    name.sort(function(a, b) {
+    userlist.sort(function(a, b) {
         return b.points - a.points;
     })
 
-    for (var i = 0; i < name.length; i++) {
-        if (name[i].isCorrect) {
-            $('#listPlayers').append($('<li style = "color: red" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
+    for (var i = 0; i < userlist.length; i++) {
+        if (userlist[i].isCorrect) {
+            $('#listPlayers').append($('<li style = "color: red" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
         }
-        else if (name[i].isDrawing) {
-            $('#listPlayers').append($('<li style = "color: green" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
+        else if (userlist[i].isDrawing) {
+            $('#listPlayers').append($('<li style = "color: green" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
         }
         else {
-            $('#listPlayers').append($('<li style = "color: black" class = "list-group-item">').text(name[i].username + " (" + name[i].points + ")"));
+            $('#listPlayers').append($('<li style = "color: black" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
         }
     }
 

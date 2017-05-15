@@ -58,33 +58,20 @@ input{
 	background: #424242;
 }
 
-#listPlayers { font-size: 100%;}
+#listPlayers {
+    font-size: 100%;
+    overflow:auto;
+    height:28%;
+    background: #f2f2f2;
+}
+
+.player-list-item:nth-child(odd){ background: #e6e6e6;}
 
 span{
 	color:white;
 }
 
 #timerOnFirstGuess{ color: #E60000; font-size:22px; }
-
-#txtAreaChat
-{
-	border-radius: 0 !important;
-	resize: none;
-	height: 100%;
-	background-color: #333333;
-	border-color:#262626;
-
-	/*color:#91C3DC;*/
-	color: #DDDDDD;
-	/*color: #FF5B00;*/ /* color for server messages */
-	text-shadow: 1px 1px black;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 100%
-
-
-}
-
-#txtAreaChat:hover, #txtAreaGame:hover{cursor: default;}
 
 #txtAreaGame
 {
@@ -99,8 +86,29 @@ span{
 	text-shadow: 1px 1px black;
     font-family: 'Open Sans', sans-serif;
     font-size: 100%
+}
 
+.chat-list-item{
+    background: #262626;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px black;
+    font-size: 100%
+    margin: auto;
+    line-height: 12px;
+}
+.chat-list-item:nth-child(even){ background: #333333;}
 
+#socialChatList, #gameChatList{
+    height:100%;
+    width:100%;
+    overflow:auto;
+    background-color: #262626;
+    border: 1px solid #262626;
+
+}
+
+#gameChatList{
+    height:23%
 }
 
 .hidden{position: absolute; left: -1000000px;}

@@ -45,7 +45,7 @@
 						<p id="assignedWord" align="center"></p>
 						<p id="pHint" align="center"></p>
 
-						<div class="col-md-4">
+						<div class="col-md-4" id = "playerColumn">
 							<label for="listPlayers">Players (Score)</label>
 							<ul class="list-group list-special" id="listPlayers">
 							</ul>
@@ -54,8 +54,9 @@
 						<form id="formGame">
 							<div class="col-md-8">
 
-								<label for="txtAreaGame">Game</label>
-								<textarea class="form-control" id="txtAreaGame" rows="3" disabled></textarea>
+								<label for="gameChatList">Game</label>
+								<ul class="list-group list-special" id = "gameChatList">
+								</ul>
 								<div class="input-group">
 									<input type="text" class="form-control" id="txtGame">
 									<div class="input-group-btn">
@@ -68,20 +69,12 @@
 
 					<form id="formChat">
 						<div class="form-group">
-							<label for="txtAreaChat">Social</label>
-							<textarea class="form-control" id="txtAreaChat" rows="3" value="test" disabled>Welcome! Here's how to play:
-1. An artist will be selected to draw a given word on the canvas to the right. (Artist is player highlighted in green.)
-2. Everyone else will guess what that word is under the "Game" text box. Guess one word at a time.
-3. A timer will start when the first person correctly guesses the word. The round will then end in 20 seconds. (5 seconds if there are two players.)
-4. After the round ends, a new artist is selected and a new round begins.
-5. The first person to guess correctly gets ten points, second person nine, third gets eight, and so on.
-6. You can chat with other people under the "Chat" text box.
-NOTE: This is still under development and may crash and burn unexpectedly. Some elements may not load correctly if you are using Internet Explorer, Microsoft Edge, or Safari.
-If you think something is happening that is not supposed to, please let me know.
-Thank you for joining, and I hope you have fun! - Neil Dunn, developer.&#013;</textarea>
+							<label for="socialChatList">Social</label>
 
+							<ul class="list-group list-special" id = "socialChatList">
+							</ul>
 							<div class="input-group">
-								<input type="text" class="form-control" id="txtChat">
+								<input type="text" class="form-control" autocomplete = "off" id="txtChat">
 
 								<div class="input-group-btn">
 									<button type="submit" class="btn btn-primary" id="btnChat">Send</button>
