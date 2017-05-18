@@ -16,13 +16,16 @@ http.listen(80, function() {
     console.log('Connected to *:80. Listening...');
 });
 
+const roundTime = 180 * 1000;
+const activityTime = 15 * 1000;
 var users = [];
 var artistIndex = 0;
+var activity = 0;
 
 var timer;
 var alarmTime;
 var roundTimer;
-const roundTime = 180 * 1000;
+var activityTimer;
 var word_history = [];
 var wordIndex = 0;
 var hint = "";
@@ -97,6 +100,7 @@ io.on('connection', function(socket) {
 
     socket.on('draw', function(data) {
         io.emit('draw', data);
+        clearTimeout(activityTimer);
     })
 
     socket.on('skip round', function(name, word) {
@@ -133,7 +137,12 @@ io.on('connection', function(socket) {
             io.sockets.in(playerStatus(name).id).emit('game message', "You cannot give any more hints.\n");
         }
         io.emit('give hint', hint);
-    })
+    });
+
+    socket.on('get word', function(word){
+        word_history.push(word);
+    });
+
 
     socket.on('disconnect', function() {
         var isDrawing = playerID(socket.id).isDrawing;
@@ -153,6 +162,7 @@ io.on('connection', function(socket) {
 
         if(users.length == 1){
             clearTimeout(roundTimer);
+            clearTimeout(activityTimer);
         }
 
         io.emit('remove user', users);
@@ -220,6 +230,7 @@ function setNextRound() {
         'GAME');
 
     artistIndex++;
+    activity = 0;
     setRoundTimer();
 }
 
@@ -262,6 +273,7 @@ function adjustTimer() {
 
 function startTimer(word) {
     clearTimeout(roundTimer);
+    clearTimeout(activityTimer);
     alarmTime = setTimeout(function() {
         io.emit('game message', " The round has ended. The word was: " + word_history[wordIndex] + "\n", undefined, undefined, 'NEW-ROUND');
         setNextRound();
@@ -272,8 +284,20 @@ function startTimer(word) {
 
 function setRoundTimer(){
     clearTimeout(roundTimer);
+    clearTimeout(activityTimer);
+
     io.emit('round timer', roundTime);
+    console.log("Round timer started..\n");
+
     roundTimer = setTimeout(function(){
+        io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
         setNextRound();
-    }, roundTime)
+    }, roundTime);
+    console.log("Activity timer started..\n");
+
+    activityTimer = setTimeout(function(){
+        io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
+        setNextRound();
+    }, activityTime);
+
 }

@@ -12,6 +12,7 @@ var alarmTimer = function(count){
 }
 
 var startAlarmTimer = function(count){
+    socket.emit('get word', getWord());
     clearInterval(roundCounter);
     $("#timerOnRoundStart").empty();
     alarmCounter = setInterval(function() {
@@ -21,9 +22,10 @@ var startAlarmTimer = function(count){
 }
 
 var startNormalTimer = function(time){
+    socket.emit('get word', getWord());
     clearInterval(roundCounter);
     $("#timerOnRoundStart").empty();
-
+    var startTime = time;
     roundCounter = setInterval(function(){
         time -= 1000;
         var minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));

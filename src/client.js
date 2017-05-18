@@ -1,6 +1,6 @@
 const socket = io.connect();
 var clientName = "";
-
+var activity = 0;
 $("#txtModal").val(generateRandomUser());
 
 $('#formModal').submit(function() {
@@ -178,6 +178,7 @@ $('#formGame').submit(function() {
 });
 
 canvas.observe('mouse:up', function() {
+    activity = 1;
     socket.emit('draw', JSON.stringify(canvas));
 });
 
@@ -220,6 +221,7 @@ socket.on('reset', function(users) {
     refreshPlayerList(users);
 
     hintCount = 0;
+    activity = 0;
     $("#pHint").html("");
 });
 
