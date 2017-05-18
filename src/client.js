@@ -8,7 +8,7 @@ $('#formModal').submit(function() {
     $('#myModal').modal('hide');
 
     socket.emit('add user', clientName, getWord());
-    socket.emit('chat message', "[Server] " + clientName + " has joined the game!", 'SERVER');
+    socket.emit('chat message', clientName + " has joined the game!", 'SERVER');
 
     $("#lblUsername").html("Your username: " + clientName);
     return false;
@@ -31,9 +31,7 @@ socket.on('user_left', function(msg) {
 });
 
 socket.on('chat message', function(msg, msgType) {
-    //$('#txtAreaChat').append(msg + '\n');
-
-    switch(msgType){
+    switch (msgType) {
         case 'SERVER':
             $('#socialChatList').append($('<li style = "color:#33ccff" class = "list-group-item chat-list-item">').text(msg));
             break;
@@ -43,21 +41,23 @@ socket.on('chat message', function(msg, msgType) {
 
     }
     $('#socialChatList').scrollTop($('#socialChatList')[0].scrollHeight);
-
 });
 
 socket.on('game message', function(msg, undefined, undefined, msgType) {
 
-    switch(msgType){
+    switch (msgType) {
         case 'CORRECT-GUESS':
             $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
             break;
         case 'GAME':
         case 'NOTICE':
-            $('#gameChatList').append($('<li style = "color: #FF5B00;" class = "list-group-item chat-list-item">').text(msg));
+            $('#gameChatList').append($('<li style = "color: #ff6a1a;" class = "list-group-item chat-list-item">').text(msg));
             break;
         case 'HINT':
             $('#gameChatList').append($('<li style = "color: #B8860B;" class = "list-group-item chat-list-item">').text(msg));
+            break;
+        case 'NEW-ROUND':
+            $('#gameChatList').append($('<li style = "color: #cc0000;" class = "list-group-item chat-list-item">').text(msg));
             break;
         default:
             $('#gameChatList').append($('<li style = "color: #DDDDDD" class = "list-group-item chat-list-item">').text(msg));
@@ -67,7 +67,7 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
     $('#gameChatList').scrollTop($('#gameChatList')[0].scrollHeight);
 });
 
-socket.on('refresh player list', function(users, isCorrect){
+socket.on('refresh player list', function(users, isCorrect) {
     refreshPlayerList(users);
 
     if (isCorrect) {
@@ -75,60 +75,57 @@ socket.on('refresh player list', function(users, isCorrect){
     }
 })
 
-socket.on('lock game input', function(isCorrect, skipped, word){
-    if(isCorrect){
-        $("#txtGame").css({"background-color": "#84e184"});
+socket.on('lock game input', function(isCorrect, skipped, word) {
+    if (isCorrect) {
+        $("#txtGame").css({
+            "background-color": "#84e184",
+            "border-color": "#28a428"
+        });
         $("#txtGame").prop("disabled", true);
         $("#btnGame").prop("disabled", true);
-        $("#txtAreaGame").append("You can speak here again once the round ends.\n");
         $("#txtGame").val("You found the word: " + word + "!");
 
     }
-    if(skipped){
+    if (skipped) {
         $("#txtAreaGame").append("You cannot skip because you are the only person in the room.\n");
     }
 
 
 });
 
+socket.on('round timer', function(time){
+    $("#timerOnRoundStart").show();
+    startNormalTimer(time);
+});
+
+
 socket.on('fire off timer', function(time, isClicked) {
     timerSound.load();
     timerSound.play();
 
-    var counter;
-    var count = time;
+    $("#timerOnRoundStart").empty();
     $("#timerOnFirstGuess").show();
 
     $("#btnSkip").prop("disabled", true);
 
-    counter = setInterval(function() {
-        timer();
-        $("#timerOnFirstGuess").html(count / 100);
-    }, 10);
-
-    function timer() {
-        if (count <= 0) {
-            document.getElementById("timer").pause();
-            $("#timerOnFirstGuess").hide();
-            clearInterval(counter);
-            resetCanvas();
-            return;
-        }
-        count--;
-    }
+    startAlarmTimer(time);
 
 });
 
 socket.on('remove user', function(usernames, msg) {
     refreshPlayerList(usernames);
+    if(usernames.length == 1){
+        clearInterval(roundCounter);
+        $("#timerOnRoundStart").empty();
+
+    }
 });
 
 socket.on('add user', function(users, word, isDrawing) {
-    if(isDrawing){
+    if (isDrawing) {
         addArtistPrivileges();
         $("#assignedWord").html(word);
-    }
-    else{
+    } else {
         removeArtistPrivileges();
     }
 
@@ -148,8 +145,7 @@ socket.on('next round', function(usernames, word, isArtist) {
     if (isArtist) {
         addArtistPrivileges();
         nextArtistSound.play();
-    }
-    else {
+    } else {
         removeArtistPrivileges();
         endOfRoundSound.play();
         word = "";
@@ -159,21 +155,25 @@ socket.on('next round', function(usernames, word, isArtist) {
     resetCanvas();
 });
 
-socket.on('give hint', function(hint){
+socket.on('give hint', function(hint) {
     $("#pHint").html("Hint: " + hint);
 });
 
 /*********** SOCIAL CHAT ***********/
 $('#formChat').submit(function() {
-    socket.emit('chat message', updateTime() + $('#txtChat').val());
-    $('#txtChat').val('');
+    if($('#txtChat').val() != ''){
+        socket.emit('chat message', updateTime() + $('#txtChat').val());
+        $('#txtChat').val('');
+    }
     return false;
 });
 
 /*********** GAME CHAT ***********/
 $('#formGame').submit(function() {
-    socket.emit('game message', clientName, $('#txtGame').val(), getWord(), undefined);
-    $('#txtGame').val('');
+    if($('#txtGame').val() != ''){
+        socket.emit('game message', clientName, $('#txtGame').val(), getWord(), undefined);
+        $('#txtGame').val('');
+    }
     return false;
 });
 
@@ -198,22 +198,23 @@ function refreshPlayerList(userlist) {
     for (var i = 0; i < userlist.length; i++) {
         if (userlist[i].isCorrect) {
             $('#listPlayers').append($('<li style = "color: red" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
-        }
-        else if (userlist[i].isDrawing) {
+        } else if (userlist[i].isDrawing) {
             $('#listPlayers').append($('<li style = "color: green" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
-        }
-        else {
+        } else {
             $('#listPlayers').append($('<li style = "color: black" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
         }
     }
 
 }
 
-socket.on('reset', function(users){
+socket.on('reset', function(users) {
     $("#txtGame").prop("disabled", false);
     $("#btnGame").prop("disabled", false);
     $("#txtGame").val('');
-    $("#txtGame").css({"background-color": "white"});
+    $("#txtGame").css({
+        "background-color": "white",
+        "border-color": "white"
+    });
 
     removeArtistPrivileges();
     refreshPlayerList(users);
@@ -232,7 +233,10 @@ function addArtistPrivileges() {
     $(".drawingTools").show();
     $("#txtGame").val("You cannot speak here since you are the artist.");
     $("#txtGame").prop("disabled", true);
-    $("#txtGame").css({"background-color": "#e59a9a"});
+    $("#txtGame").css({
+        "background-color": "#e59a9a",
+        "border-color": "#b62f2f"
+    });
     $("#btnGame").prop("disabled", true);
 
     canvas.isDrawingMode = true;
@@ -252,6 +256,6 @@ function getWord() {
     return words[rand];
 }
 
-var removeUser = function(){
+var removeUser = function() {
     socket.emit('remove user', clientName, getWord());
 }

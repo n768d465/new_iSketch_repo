@@ -49,20 +49,6 @@ $('#btnSkip').click(() => {
 	socket.emit('skip round', clientName, getWord());
 });
 
-/* Found this timer from a stack overflow question.
- * Unfortunately I cannot find the exact question right now.
- */
-function timer()
-{
-    if (count <= 0)
-    {
-        clearInterval(counter);
-        return;
-     }
-     count--;
-
-	 return count;
-}
 
 function resetCanvas(){
     canvas.clear();

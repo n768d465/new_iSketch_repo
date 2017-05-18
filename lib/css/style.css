@@ -72,6 +72,11 @@ span{
 }
 
 #timerOnFirstGuess{ color: #E60000; font-size:22px; }
+#timerOnRoundStart {
+    position:relative;
+    color: #d9d9d9;
+    font-size:18px;
+}
 
 #txtAreaGame
 {
@@ -127,7 +132,6 @@ span{
 
 #btnChat,#btnGame { position:relative; left:1px; height:34px; }
 
-#timerOnRoundStart { position:relative;}
 
 /* http://www.bootply.com/95585 */
 .list-special .list-group-item:first-child { border-top-right-radius: 0px; border-top-left-radius: 0px;}
