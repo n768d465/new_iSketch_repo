@@ -1,3 +1,4 @@
+"use strict";
 const express = require('express'),
     app = express();
 const http = require('http').Server(app);
@@ -17,7 +18,8 @@ http.listen(80, function() {
 });
 
 const roundTime = 180 * 1000;
-const activityTime = 15 * 1000;
+const activityTime = 25 * 1000;
+
 var users = [];
 var artistIndex = 0;
 var activity = 0;
@@ -31,6 +33,7 @@ var wordIndex = 0;
 var hint = "";
 
 io.on('connection', function(socket) {
+
 
     socket.on('add user', function(name, word) {
         var player = {
@@ -51,7 +54,7 @@ io.on('connection', function(socket) {
         word_history.push(word);
 
         adjustTimer();
-        if(users.length == 2){
+        if (users.length == 2) {
             setRoundTimer();
         }
         io.sockets.in(player.id).emit('add user', users, getWord(), player.isDrawing);
@@ -65,7 +68,16 @@ io.on('connection', function(socket) {
     });
 
     socket.on('game message', function(name, msg, word, msgType) {
-        var pointsToGive = 10 - getCorrectPlayers(users);
+        let correctPlayers = getCorrectPlayers(users);
+        var pointsToGive;
+
+        if(correctPlayers <= 5){
+            pointsToGive = 10 - getCorrectPlayers(users);
+        }
+        else{
+            pointsToGive = 5;
+        }
+
         var player = playerStatus(name);
 
         if (msg.toLowerCase().includes(word_history[wordIndex])) {
@@ -91,7 +103,11 @@ io.on('connection', function(socket) {
                 startTimer(word);
 
             }
-        } else {
+        }
+        else if(diceCoefficient(msg.toLowerCase(), word_history[wordIndex]) >= 0.33){
+            io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", undefined, undefined, 'CLOSE-GUESS');
+        }
+        else {
             io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
         }
         console.log(name + ": " + msg);
@@ -101,17 +117,17 @@ io.on('connection', function(socket) {
     socket.on('draw', function(data) {
         io.emit('draw', data);
         clearTimeout(activityTimer);
-    })
+    });
 
     socket.on('skip round', function(name, word) {
 
         if (users.length <= 1) {
             io.sockets.in(playerStatus(name).id).emit('private game message ', false, true);
-        } else {
+        }
+        else {
             io.emit('game message', "The artist has skipped the round.\n", undefined, undefined, 'NOTICE');
             setNextRound(users);
             word_history.push(word);
-
         }
 
     });
@@ -139,7 +155,7 @@ io.on('connection', function(socket) {
         io.emit('give hint', hint);
     });
 
-    socket.on('get word', function(word){
+    socket.on('get word', function(word) {
         word_history.push(word);
     });
 
@@ -156,11 +172,11 @@ io.on('connection', function(socket) {
             if (users.length == 0) {
                 artistIndex = 0;
             }
-            //else{artistIndex--;}
+            else{artistIndex++;}
             setNextRound();
         }
 
-        if(users.length == 1){
+        if (users.length == 1) {
             clearTimeout(roundTimer);
             clearTimeout(activityTimer);
         }
@@ -181,14 +197,21 @@ function removePlayerByID(playerName) {
     let index = users.map(function(e) {
         return e.id;
     }).indexOf(playerName);
-    users.splice(index, 1);
+
+    if(index != null){
+        users.splice(index, 1);
+    }
 }
 
 function playerStatus(player) {
     let index = users.map(function(p) {
         return p.username;
     }).indexOf(player)
-    return users[index];
+
+    if(index != null){
+        return users[index];
+    }
+    //return users[index];
     //return users[player];
 }
 
@@ -282,22 +305,44 @@ function startTimer(word) {
     }, timer);
 }
 
-function setRoundTimer(){
+function setRoundTimer() {
     clearTimeout(roundTimer);
     clearTimeout(activityTimer);
 
     io.emit('round timer', roundTime);
     console.log("Round timer started..\n");
 
-    roundTimer = setTimeout(function(){
+    roundTimer = setTimeout(function() {
         io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
         setNextRound();
     }, roundTime);
     console.log("Activity timer started..\n");
 
-    activityTimer = setTimeout(function(){
+    activityTimer = setTimeout(function() {
         io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
         setNextRound();
     }, activityTime);
 
+}
+
+function diceCoefficient(str1, str2){
+    var bigramsStr1 = [];
+    var bigramsStr2 = [];
+    for(let i = 0; i < str1.length - 1; i++){
+        bigramsStr1.push(str1.substr(i,2));
+    }
+
+    for(let i = 0; i < str2.length - 1; i++){
+        bigramsStr2.push(str2.substr(i,2));
+    }
+
+    var intersection = bigramsStr1.filter(function(n){
+        return bigramsStr2.indexOf(n) !== -1;
+    });
+
+    console.log(intersection);
+
+    var score = (2 * (intersection.length)) / (bigramsStr1.length + bigramsStr2.length);
+    console.log(score);
+    return score;
 }

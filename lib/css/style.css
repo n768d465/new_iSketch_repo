@@ -1,141 +1,224 @@
-body
-{
-  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#424242+0,0e0e0e+99 */
-	background: #424242; /* Old browsers */
-	background: -moz-linear-gradient(top,  #424242 0%, #0e0e0e 99%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(top,  #424242 0%,#0e0e0e 99%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to bottom,  #424242 0%,#0e0e0e 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
-    width: 100%;
-    height: 100%;
+
+
+body {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#424242+0,0e0e0e+99 */
+    background: #424242;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #424242 0%, #0e0e0e 99%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #424242 0%, #0e0e0e 99%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #424242 0%, #0e0e0e 99%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#0e0e0e', GradientType=0);
+    /* IE6-9 */
+
 }
 
+h1{
+    color: #d9d9d9;
 
-html{
+}
+
+html, body{
+    width:100%;
+    height:100%;
     margin: 0 auto;
-    width: 100%;
-    height: 100%;
+    overflow:auto;
+    display:block;
 }
 
-label{ color: #008ea8; text-shadow: 1px 1px black; font-weight: 500; font-family: 'Open Sans', sans-serif;}
-
-p { color: #7DBD00; text-shadow: 1px 1px black; font-family: 'Open Sans', sans-serif; }
-
-.background{
-	margin: 0 auto;
-	align-content: center;
-	}
-
-#lineWidth{
-    display: inline;
-    magin:0px;
-    padding:0px;
-}
-
-
-
-#assignedWord {font-size: 20px;}
-
-.list-group { width:100%; }
-
-.form-group { height:50%; }
-
-#myModal{
-	width:20%;
-	position:fixed;
-	left: 40%;
-	top: 25%;
-}
-
-input{
+label {
+    color: #008ea8;
+    text-shadow: 1px 1px black;
+    font-weight: 500;
     font-family: 'Open Sans', sans-serif;
-
-}
-.container-fluid{
 }
 
-.modal-body, .modal-content, #formModal{
-	background: #424242;
+p {
+    color: #7DBD00;
+    text-shadow: 1px 1px black;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.background {
+    margin: 0 auto;
+    align-content: center;
+}
+
+#lineWidth {
+    display: inline;
+    magin: 0px;
+    padding: 0px;
+}
+
+#assignedWord {
+    font-size: 20px;
+}
+
+.list-group {
+    width: 100%;
+}
+
+.form-group {
+    height: 50%;
+}
+
+#myModal {
+    width: 20%;
+    position: fixed;
+    left: 40%;
+    top: 25%;
+}
+
+input {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.modal-body, .modal-content, #formModal {
+    background:  #333333;
 }
 
 #listPlayers {
     font-size: 100%;
-    overflow:auto;
-    height:28%;
+    overflow: auto;
+    height: 28%;
     background: #f2f2f2;
 }
 
-.player-list-item:nth-child(odd){ background: #e6e6e6;}
-
-span{
-	color:white;
+.player-list-item:nth-child(odd) {
+    background: #e6e6e6;
 }
 
-#timerOnFirstGuess{ color: #E60000; font-size:22px; }
-#timerOnRoundStart {
+span {
+    color: white;
+}
+
+#timerOnFirstGuess {
     position:relative;
-    color: #d9d9d9;
-    font-size:18px;
+    color: #E60000;
+    font-size: 22px;
 }
 
-#txtAreaGame
-{
-	border-radius: 0 !important;
-	resize: none;
-	height: 25%;
-	/*background-color: #E0E0E0;*/
-	background-color: #333333;
-	border-color:#262626;
+#timerOnRoundStart {
+    color: #d9d9d9;
+    font-size: 16px;
+
+}
+
+
+#txtAreaGame {
+    border-radius: 0 !important;
+    resize: none;
+    height: 25%;
+    /*background-color: #E0E0E0;*/
+    background-color: #333333;
+    border-color: #262626;
     color: #DDDDDD;
-	/*color: #FF5B00;*/ /* color for server messages */
-	text-shadow: 1px 1px black;
+    /*color: #FF5B00;*/
+    /* color for server messages */
+    text-shadow: 1px 1px black;
     font-family: 'Open Sans', sans-serif;
     font-size: 100%
 }
 
-.chat-list-item{
+.chat-list-item {
     background: #262626;
     font-family: 'Open Sans', sans-serif;
     text-shadow: 1px 1px black;
-    font-size: 100%
-    margin: auto;
+    font-size: 100% margin: auto;
     line-height: 12px;
 }
-.chat-list-item:nth-child(even){ background: #333333;}
 
-#socialChatList, #gameChatList{
-    height:100%;
-    width:100%;
-    overflow:auto;
+.chat-list-item:nth-child(even) {
+    background: #333333;
+}
+
+#socialChatList, #gameChatList {
+    height: 75%;
+    width: 100%;
+    overflow: auto;
     background-color: #262626;
     border: 1px solid #262626;
+}
+
+#gameChatList {
+    height: 23%
+}
+
+.hidden {
+    position: absolute;
+    left: -1000000px;
+}
+
+.btn {
+    border-radius: 0 !important;
+    border-width: 1px;
+}
+
+#txtChat, #txtGame, #txtModal {
+    border-radius: 0 !important;
+}
+
+#txtGame, #btnGame, #btnChat, #txtChat, #lblUsername{
+    position:relative;
+    bottom:20px;
+}
+
+#btnModal {
+    left: 10px;
+}
+
+#txtModal {
+    left: 10px;
+}
+
+#pHint {
+    color: #B8860B;
+    font-size: 20px;
+}
+ h1 {    text-shadow: 1px 1px black;}
+.pInstr{
+    color: #d9d9d9;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    text-shadow: 1px 1px black;
 
 }
 
-#gameChatList{
-    height:23%
+#btnChat, #btnGame {
+    position: relative;
+    left: 1px;
+    height: 34px;
 }
 
-.hidden{position: absolute; left: -1000000px;}
+#labelInfo, #labelAbout{
+    position: relative;
+    bottom: 14px;
+    font-size:17px;
+    margin: auto;
 
-.btn { border-radius: 0 !important; border-width: 1px;}
-
-#txtChat,#txtGame,#txtModal { border-radius: 0 !important; }
-
-#btnModal{
-	left:10px;
 }
-#txtModal{left:10px;}
 
-#pHint{color:#B8860B;  font-size: 20px;}
-
-
-#btnChat,#btnGame { position:relative; left:1px; height:34px; }
-
+#labelAbout:hover, #labelInfo:hover{
+    transition: color 0.5s ease;
+    color: #008ea8;
+    cursor:pointer;
+}
 
 /* http://www.bootply.com/95585 */
-.list-special .list-group-item:first-child { border-top-right-radius: 0px; border-top-left-radius: 0px;}
 
-.list-special .list-group-item:last-child { border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; }
+.list-special .list-group-item:first-child {
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+}
 
-.list-group-item{ border:none; }
+.list-special .list-group-item:last-child {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.list-group-item {
+    border: none;
+}

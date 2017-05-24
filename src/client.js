@@ -14,13 +14,12 @@ $('#formModal').submit(function() {
     return false;
 });
 
-
 var alertSound = document.getElementById("alertSound");
 var userJoinedSound = document.getElementById("userJoinedSound");
 var timerSound = document.getElementById("timer");
 var nextArtistSound = document.getElementById("nextArtistSound");
 var endOfRoundSound = document.getElementById("endOfRoundSound");
-
+var closeAlert = document.getElementById("closeAlert");
 socket.on('user joined', function(users) {
     userJoinedSound.play();
     refreshPlayerList(users);
@@ -59,6 +58,10 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
         case 'NEW-ROUND':
             $('#gameChatList').append($('<li style = "color: #cc0000;" class = "list-group-item chat-list-item">').text(msg));
             break;
+        case 'CLOSE-GUESS':
+            $('#gameChatList').append($('<li style = "color: #f5c13d;" class = "list-group-item chat-list-item">').text(msg));
+            closeAlert.play();
+            break;
         default:
             $('#gameChatList').append($('<li style = "color: #DDDDDD" class = "list-group-item chat-list-item">').text(msg));
             break;
@@ -93,8 +96,8 @@ socket.on('lock game input', function(isCorrect, skipped, word) {
 
 });
 
-socket.on('round timer', function(time){
-    $("#timerOnRoundStart").show();
+socket.on('round timer', function(time) {
+    $("#timerOnRoundStart").empty().append(time);
     startNormalTimer(time);
 });
 
@@ -114,7 +117,7 @@ socket.on('fire off timer', function(time, isClicked) {
 
 socket.on('remove user', function(usernames, msg) {
     refreshPlayerList(usernames);
-    if(usernames.length == 1){
+    if (usernames.length == 1) {
         clearInterval(roundCounter);
         $("#timerOnRoundStart").empty();
 
@@ -141,6 +144,7 @@ socket.on('draw', function(data) {
 
 socket.on('next round', function(usernames, word, isArtist) {
     $("#btnSkip").prop("disabled", false);
+    $("#timerOnRoundStart").show();
 
     if (isArtist) {
         addArtistPrivileges();
@@ -148,7 +152,8 @@ socket.on('next round', function(usernames, word, isArtist) {
     } else {
         removeArtistPrivileges();
         endOfRoundSound.play();
-        word = "";
+        $("#assignedWord").empty();
+
     }
     $("#assignedWord").html(word);
     refreshPlayerList(usernames);
@@ -161,7 +166,7 @@ socket.on('give hint', function(hint) {
 
 /*********** SOCIAL CHAT ***********/
 $('#formChat').submit(function() {
-    if($('#txtChat').val() != ''){
+    if ($('#txtChat').val() != '') {
         socket.emit('chat message', updateTime() + $('#txtChat').val());
         $('#txtChat').val('');
     }
@@ -170,7 +175,7 @@ $('#formChat').submit(function() {
 
 /*********** GAME CHAT ***********/
 $('#formGame').submit(function() {
-    if($('#txtGame').val() != ''){
+    if ($('#txtGame').val() != '') {
         socket.emit('game message', clientName, $('#txtGame').val(), getWord(), undefined);
         $('#txtGame').val('');
     }
@@ -180,6 +185,7 @@ $('#formGame').submit(function() {
 canvas.observe('mouse:up', function() {
     activity = 1;
     socket.emit('draw', JSON.stringify(canvas));
+    console.log(canvas.getObjects());
 });
 
 function updateTime() {

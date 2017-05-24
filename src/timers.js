@@ -1,6 +1,6 @@
 var alarmCounter;
 var roundCounter;
-var alarmTimer = function(count){
+var alarmTimer = function(count) {
     if (count <= 0) {
         document.getElementById("timer").pause();
         $("#timerOnFirstGuess").hide();
@@ -11,7 +11,7 @@ var alarmTimer = function(count){
 
 }
 
-var startAlarmTimer = function(count){
+var startAlarmTimer = function(count) {
     socket.emit('get word', getWord());
     clearInterval(roundCounter);
     $("#timerOnRoundStart").empty();
@@ -21,28 +21,30 @@ var startAlarmTimer = function(count){
     }, 10);
 }
 
-var startNormalTimer = function(time){
+var startNormalTimer = function(time) {
     socket.emit('get word', getWord());
     clearInterval(roundCounter);
+
     $("#timerOnRoundStart").empty();
+
     var startTime = time;
-    roundCounter = setInterval(function(){
+    
+    roundCounter = setInterval(function() {
         time -= 1000;
         var minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((time % (1000 * 60)) / 1000);
 
-        if(seconds <= 9){
+        if (seconds <= 9) {
             $("#timerOnRoundStart").empty().append(minutes + ":" + '0' + seconds);
             console.log(time);
 
-        }
-        else{
+        } else {
             $("#timerOnRoundStart").empty().append(minutes + ":" + seconds);
             console.log(time);
 
         }
 
-        if(time <= 0){
+        if (time <= 0) {
             $("#timerOnRoundStart").hide();
             clearInterval(time);
             resetCanvas();

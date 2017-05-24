@@ -4,11 +4,13 @@
 
 
 var canvas = new fabric.Canvas('c');
+const defaultBackgroundColor = "#fff";
+const defaultBrushColor = "#000";
 var hintCount = 0;
 canvas.isDrawingMode = true;
 
 var context = document.getElementById("c").getContext("2d");
-canvas.freeDrawingBrush.color = "#fff";
+canvas.freeDrawingBrush.color = defaultBrushColor;
 canvas.freeDrawingBrush.width = 4;
 
 colors.onchange = function(){
@@ -22,13 +24,11 @@ $("#btnColors").click(() => {
 });
 
 $("#btnEraser").click(() =>{
-	canvas.freeDrawingBrush.color = "#333";
+	canvas.freeDrawingBrush.color = defaultBackgroundColor;
 });
 
 $("#btnUndo").click(() =>{
-
 	socket.emit('draw', undoDrawing());
-
 });
 
 $("#btnHint").click(()=>{
@@ -49,18 +49,17 @@ $('#btnSkip').click(() => {
 	socket.emit('skip round', clientName, getWord());
 });
 
-
 function resetCanvas(){
     canvas.clear();
     canvas.freeDrawingBrush.width = 4;
     canvas.freeDrawingBrush.color = "#000";
-	canvas.backgroundColor="#333";
+	canvas.backgroundColor=defaultBackgroundColor;
 	canvas.renderAll();
 }
 
 function clearCanvas(){
 	canvas.clear();
-	canvas.backgroundColor="#333";
+	canvas.backgroundColor=defaultBackgroundColor;
 	return canvas.renderTop();
 }
 
@@ -73,5 +72,12 @@ $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').focus()
 })
 
-canvas.backgroundColor="#333";
+/*canvas.on('mouse:up', function() {
+  canvas.getObjects().forEach(o => {
+    o.fill = 'blue'
+  });
+  canvas.renderAll();
+})*/
+
+canvas.backgroundColor=defaultBackgroundColor;
 canvas.renderAll();
