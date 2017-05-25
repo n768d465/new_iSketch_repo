@@ -47,6 +47,7 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
     switch (msgType) {
         case 'CORRECT-GUESS':
             $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
+            alertSound.play();
             break;
         case 'GAME':
         case 'NOTICE':
@@ -72,10 +73,6 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
 
 socket.on('refresh player list', function(users, isCorrect) {
     refreshPlayerList(users);
-
-    if (isCorrect) {
-        alertSound.play();
-    }
 })
 
 socket.on('lock game input', function(isCorrect, skipped, word) {
@@ -183,9 +180,7 @@ $('#formGame').submit(function() {
 });
 
 canvas.observe('mouse:up', function() {
-    activity = 1;
     socket.emit('draw', JSON.stringify(canvas));
-    console.log(canvas.getObjects());
 });
 
 function updateTime() {
@@ -227,7 +222,6 @@ socket.on('reset', function(users) {
     refreshPlayerList(users);
 
     hintCount = 0;
-    activity = 0;
     $("#pHint").html("");
 });
 

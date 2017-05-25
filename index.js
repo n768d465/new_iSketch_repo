@@ -34,7 +34,6 @@ var hint = "";
 
 io.on('connection', function(socket) {
 
-
     socket.on('add user', function(name, word) {
         var player = {
             username: name,
@@ -104,7 +103,7 @@ io.on('connection', function(socket) {
 
             }
         }
-        else if(diceCoefficient(msg.toLowerCase(), word_history[wordIndex]) >= 0.33){
+        else if(diceCoefficient(msg.toLowerCase(), word_history[wordIndex]) >= 0.6){
             io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", undefined, undefined, 'CLOSE-GUESS');
         }
         else {
@@ -126,7 +125,7 @@ io.on('connection', function(socket) {
         }
         else {
             io.emit('game message', "The artist has skipped the round.\n", undefined, undefined, 'NOTICE');
-            setNextRound(users);
+            setNextRound();
             word_history.push(word);
         }
 
@@ -165,21 +164,21 @@ io.on('connection', function(socket) {
         var name = playerID(socket.id).username;
 
         console.log(name + " has left the game.\n");
-        removePlayerByID(socket.id);
-        adjustTimer();
 
         if (isDrawing && users.length > 0) {
             if (users.length == 0) {
                 artistIndex = 0;
             }
-            else{artistIndex++;}
             setNextRound();
         }
+
 
         if (users.length == 1) {
             clearTimeout(roundTimer);
             clearTimeout(activityTimer);
         }
+        removePlayerByID(socket.id);
+        adjustTimer();
 
         io.emit('remove user', users);
         io.emit('chat message', name + " has left the game.\n", 'SERVER');
@@ -211,8 +210,7 @@ function playerStatus(player) {
     if(index != null){
         return users[index];
     }
-    //return users[index];
-    //return users[player];
+
 }
 
 function playerID(id) {
@@ -222,13 +220,18 @@ function playerID(id) {
     return users[index];
 }
 
-function setNextRound() {
+var setNextRound = function() {
     hint = "";
     resetPlayerStatus(users);
     io.emit('reset', users)
 
-    var oldArtist = artistIndex % users.length;
-    var newArtist = (artistIndex + 1) % users.length;
+    var oldArtist = users.map(function(p){
+        return p.isDrawing
+    }).indexOf(true);
+
+
+    //var oldArtist = artistIndex % users.length;
+    var newArtist = (oldArtist + 1) % users.length;
 
     users[oldArtist].isDrawing = false;
     users[newArtist].isDrawing = true;
@@ -269,19 +272,19 @@ function getCorrectPlayers(arr) {
 }
 
 function resetPlayerStatus(arr) {
-    for (var i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         arr[i].isCorrect = false;
-        arr[i].isDrawing = false;
+        //arr[i].isDrawing = false;
     }
 }
 
 
-function getArtist(arr) {
-    for (var i = 0; i < arr.length; i++) {
-        if (arr[i].isDrawing) {
-            return arr[i];
-        }
-    }
+var getArtist = function() {
+    let index = users.map(function(p) {
+            return p.isDrawing;
+        }).indexOf(true);
+
+    return users[index];
 }
 
 var getWord = function() {
