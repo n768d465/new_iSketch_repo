@@ -5,44 +5,35 @@
 	<link href="css\style.css" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Merienda+One' rel='stylesheet' type='text/css'>
 
 	<body>
-
-
 		<!-- Login modal -->
-		<div class="container">
+		<div class="container" id="loginContainer">
 			<div class="modal fade" id="myModal" role="dialog">
-
-				<div class="modal-content">
-
-					<div class="modal-body">
-						<p>Welcome! Enter a username below:</p>
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2>newSketch</h2>
+						</div>
+						<div class="modal-body">
+							<form id="formModal">
+								<div class="buttonHolder">
+									<label for="txtModal" id="lblModal">Welcome! Enter a username below </label>
+									<input type="text" class="form-control" id="txtModal" autofocus style="text-align: center;">
+									<button type="submit" class="btn btn-primary" id="btnModal">Enter game</button>
+								</div>
+							</form>
+						</div>
 					</div>
-
-					<form id="formModal">
-
-						<div class="input-group">
-							<input type="text" class="form-control" id="txtModal" autofocus>
-						</div>
-						<br>
-						<div class="input-group-btn">
-							<button type="submit" class="btn btn-primary" id="btnModal">Enter game</button>
-						</div>
-					</form>
-
 				</div>
-
 			</div>
 		</div>
 
-
 		<!-- Modal that describes how to play the game. -->
-
 		<div class="container">
 			<div class="modal fade" id="instrModal" role="dialog">
-
 				<div class="modal-content">
-
 					<div class="modal-body">
 						<h1>The Basics </h1>
 						<p class="pInstr">
@@ -58,18 +49,14 @@
 							<br><br> Lastly, you can chat and socialize with other players under the "Social" text box. Guesses towards the drawing are NOT checked in this box.
 
 							<br><br> Got it? Good! You can click anywhere on this page to make this box disappear. Thank you for playing. I hope you have fun! - Neil Dunn
-
 						</p>
-
 						<h1>WARNING </h1>
 						<p class="pInstr">
 							This is still under development and may crash and burn unexpectedly. There is a known bug where a new artist does not get selected when a non-artist leaves the game. If this happens, just press "skip". Although I am actively searching for bugs and making
 							several test cases, I cannot guarantee this will run smoothly 100% of the time. If you think something happened that was not supposed to, please let me know.
 						</p>
 					</div>
-
 				</div>
-
 			</div>
 		</div>
 
@@ -77,42 +64,32 @@
 
 		<div class="container">
 			<div class="modal fade" id="aboutModal" role="dialog">
-
 				<div class="modal-content">
-
 					<div class="modal-body">
 						<h1>About this game </h1>
 						<p class="pInstr">
 							This is a simple remake of an older flash game known as iSketch. I had the idea of making this as a final project for one of my courses at the University of Kansas, but instead I decided to make it during my free time.
-
 							<br><br>
-
 						</p>
-
 						<h1>About me </h1>
 						<p class="pInstr">
 							I am Neil Dunn, and I am a senior at the University of Kansas with a major in computer science and minor in mathematics. Throughout my career at KU, I've learned a variety of programming languages. My strongest languages as of right now are Javascript,
 							HTML5, CSS3 and C++. I have also done work in Haskell, Python 2.7, php, C, Java, and LaTeX.
-
 							<br><br>
-
 						</p>
-
 						<h1>Are you a developer? </h1>
 						<p class="pInstr">
 							This project is open source and is available on GitHub! You can find it at <a href=h ttps://github.com/n768d465/new_iSketch_repo> https://github.com/n768d465/new_iSketch_repo  </a><br> This project was made with:<br> jQuery - makes HTML manipulation/animation
 							with JavaScript easier.<br> Bootstrap 3: HTML/CSS/JS framework<br> Node.js: Event-driven JS library that executes server-side Javscript code.<br> fabric.js: HTML5 Canvas library that makes drawing/object manipulation simple.<br> Socket.io: JS library
 							for bidirectional, real-time communcation between server and client. Client-side code runs on the browser, uses Node.js for server-side.<br>
 							<br><br>
-
 						</p>
 					</div>
-
 				</div>
-
 			</div>
 		</div>
 
+		<!-- Main page content -->
 		<div class="background">
 			<br>
 			<div class="container-fluid">
@@ -121,16 +98,13 @@
 						<div class="row">
 							<p id="assignedWord" align="center"></p>
 							<p id="pHint" align="center"></p>
-
 							<div class="col-md-4" id="playerColumn">
 								<label for="listPlayers">Players (Score)</label>
 								<ul class="list-group list-special" id="listPlayers">
 								</ul>
 							</div>
-
 							<form id="formGame">
 								<div class="col-md-8">
-
 									<label for="gameChatList">Game</label>
 									<ul class="list-group list-special" id="gameChatList">
 									</ul>
@@ -143,36 +117,28 @@
 								</div>
 							</form>
 						</div>
-
 						<form id="formChat">
 							<div class="form-group">
 								<label for="socialChatList">Social</label>
-
 								<ul class="list-group list-special" id="socialChatList">
 									<li style="color:#33ccff" class="list-group-item chat-list-item"> Welcome to newSketch! A re-creation of an older online Pictionary game known as iSketch. </li>
 									<li style="color:#33ccff" class="list-group-item chat-list-item"> First time here? Make sure to click the "how to play" button to understand how this game works. </li>
-
 								</ul>
 								<div class="input-group">
 									<input type="text" class="form-control" autocomplete="off" id="txtChat">
-
 									<div class="input-group-btn">
 										<button type="submit" class="btn btn-primary" id="btnChat">Send</button>
 									</div>
 								</div>
 								<label id="lblUsername">Your username: </label><br>
-
-								<p id = "labelInfo" data-toggle="modal" data-target="#instrModal">How To Play</button><br>
-								<p id = "labelAbout" data-toggle="modal" data-target="#aboutModal">About</button>
+								<p id="labelInfo" data-toggle="modal" data-target="#instrModal">How To Play</button><br>
+								<p id="labelAbout" data-toggle="modal" data-target="#aboutModal">About</button>
 							</div>
-
 						</form>
 					</div>
-
 					<div class="col-lg-6" id="canvasDiv">
 						<p id="timerOnRoundStart"></p>
 						<p id="timerOnFirstGuess"></p>
-
 						<nobr>
 							<div class="btn-group" role="group" aria-label="...">
 								<button type="button" id="btnClearCanvas" class="btn btn-info drawingTools">Clear</button>
@@ -182,27 +148,18 @@
 							<div class="btn-group" role="group" aria-label="...">
 								<input id="btnColors" type="button" class="btn btn-default drawingTools" value="🖌️">
 								<input type="color" class="hidden drawingTools" id="colors">
-
 								<button type="button" id="btnEraser" class="btn btn-default drawingTools">&#x25B0;</button>
 								<button type="button" id="btnUndo" class="btn btn-default drawingTools">&#x21A9;</button>
-								<span class="drawingTools">4</span>
 								<input class="drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style="width: 30%">
 							</div>
 							<canvas id="c" width="575" height="575" style="border:2px solid #888"></canvas>
 						</nobr>
-
-
-
 					</div>
-
-
-					</div>
-
-
 				</div>
 			</div>
 		</div>
 
+		<!-- Audio clips -->
 
 		<audio id="alertSound">
         	<source src = "sounds\sms-alert-1-daniel_simon.wav" type = "audio/wav">
@@ -228,6 +185,7 @@
         	<source src = "sounds\closeAlert.wav" type = "audio/wav">
         </audio>
 
+		<!-- End audio clips -->
 
 	</body>
 
@@ -239,11 +197,8 @@
 	<script src="words.js"></script>
 	<script src="canvas.js"></script>
 	<script src="client.js"></script>
-
-
 	<script>
 		$(document).ready(function() {
-			//$("#myModal").modal();
 			$('#myModal').modal({
 				backdrop: 'static'
 			})

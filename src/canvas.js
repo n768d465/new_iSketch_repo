@@ -2,10 +2,10 @@
  * http://fabricjs.com/freedrawing
  */
 
-
-var canvas = new fabric.Canvas('c');
 const defaultBackgroundColor = "#fff";
 const defaultBrushColor = "#000";
+
+var canvas = new fabric.Canvas('c');
 var hintCount = 0;
 canvas.isDrawingMode = true;
 
@@ -16,7 +16,6 @@ canvas.freeDrawingBrush.width = 4;
 colors.onchange = function(){
 	canvas.freeDrawingBrush.color = this.value;
 }
-
 
 $("#btnColors").click(() => {
 	$("#colors").focus();
@@ -38,7 +37,7 @@ $("#btnHint").click(()=>{
 
 lineWidth.onchange = function(){
     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
-    this.previousSibling.innerHTML = this.value;
+    $("#spanTool").html(canvas.freeDrawingBrush.width);
 }
 
 $('#btnClearCanvas').click(() => {

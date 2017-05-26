@@ -1,6 +1,7 @@
+"use strict";
 const socket = io.connect();
 var clientName = "";
-var activity = 0;
+
 $("#txtModal").val(generateRandomUser());
 
 $('#formModal').submit(function() {
@@ -14,22 +15,23 @@ $('#formModal').submit(function() {
     return false;
 });
 
-var alertSound = document.getElementById("alertSound");
-var userJoinedSound = document.getElementById("userJoinedSound");
-var timerSound = document.getElementById("timer");
-var nextArtistSound = document.getElementById("nextArtistSound");
-var endOfRoundSound = document.getElementById("endOfRoundSound");
-var closeAlert = document.getElementById("closeAlert");
-socket.on('user joined', function(users) {
+const alertSound = document.getElementById("alertSound");
+const userJoinedSound = document.getElementById("userJoinedSound");
+const timerSound = document.getElementById("timer");
+const nextArtistSound = document.getElementById("nextArtistSound");
+const endOfRoundSound = document.getElementById("endOfRoundSound");
+const closeAlert = document.getElementById("closeAlert");
+
+socket.on('user joined', users => {
     userJoinedSound.play();
     refreshPlayerList(users);
 });
 
-socket.on('user_left', function(msg) {
+socket.on('user_left', msg => {
     $('#socialChatList').append(msg + '\n')
 });
 
-socket.on('chat message', function(msg, msgType) {
+socket.on('chat message', (msg, msgType) => {
     switch (msgType) {
         case 'SERVER':
             $('#socialChatList').append($('<li style = "color:#33ccff" class = "list-group-item chat-list-item">').text(msg));
@@ -42,10 +44,10 @@ socket.on('chat message', function(msg, msgType) {
     $('#socialChatList').scrollTop($('#socialChatList')[0].scrollHeight);
 });
 
-socket.on('game message', function(msg, undefined, undefined, msgType) {
+socket.on('game message', function(msg, users, word, msgType)  {
 
     switch (msgType) {
-        case 'CORRECT-GUESS':
+        case 'CORRECT GUESS':
             $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
             alertSound.play();
             break;
@@ -56,10 +58,10 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
         case 'HINT':
             $('#gameChatList').append($('<li style = "color: #B8860B;" class = "list-group-item chat-list-item">').text(msg));
             break;
-        case 'NEW-ROUND':
+        case 'NEW ROUND':
             $('#gameChatList').append($('<li style = "color: #cc0000;" class = "list-group-item chat-list-item">').text(msg));
             break;
-        case 'CLOSE-GUESS':
+        case 'CLOSE GUESS':
             $('#gameChatList').append($('<li style = "color: #f5c13d;" class = "list-group-item chat-list-item">').text(msg));
             closeAlert.play();
             break;
@@ -71,11 +73,11 @@ socket.on('game message', function(msg, undefined, undefined, msgType) {
     $('#gameChatList').scrollTop($('#gameChatList')[0].scrollHeight);
 });
 
-socket.on('refresh player list', function(users, isCorrect) {
+socket.on('refresh player list', (users, isCorrect) => {
     refreshPlayerList(users);
 })
 
-socket.on('lock game input', function(isCorrect, skipped, word) {
+socket.on('lock game input', (isCorrect, skipped, word) => {
     if (isCorrect) {
         $("#txtGame").css({
             "background-color": "#84e184",
@@ -93,13 +95,13 @@ socket.on('lock game input', function(isCorrect, skipped, word) {
 
 });
 
-socket.on('round timer', function(time) {
+socket.on('round timer', time => {
     $("#timerOnRoundStart").empty().append(time);
     startNormalTimer(time);
 });
 
 
-socket.on('fire off timer', function(time, isClicked) {
+socket.on('fire off timer', (time, isClicked) => {
     timerSound.load();
     timerSound.play();
 
@@ -112,7 +114,7 @@ socket.on('fire off timer', function(time, isClicked) {
 
 });
 
-socket.on('remove user', function(usernames, msg) {
+socket.on('remove user', (usernames, msg) => {
     refreshPlayerList(usernames);
     if (usernames.length == 1) {
         clearInterval(roundCounter);
@@ -121,7 +123,7 @@ socket.on('remove user', function(usernames, msg) {
     }
 });
 
-socket.on('add user', function(users, word, isDrawing) {
+socket.on('add user', (users, word, isDrawing) => {
     if (isDrawing) {
         addArtistPrivileges();
         $("#assignedWord").html(word);
@@ -131,7 +133,7 @@ socket.on('add user', function(users, word, isDrawing) {
 
 });
 
-socket.on('draw', function(data) {
+socket.on('draw', data => {
     canvas.loadFromJSON(data);
     canvas.forEachObject(function(o) {
         o.selectable = false;
@@ -139,7 +141,7 @@ socket.on('draw', function(data) {
     canvas.renderAll();
 });
 
-socket.on('next round', function(usernames, word, isArtist) {
+socket.on('next round', (usernames, word, isArtist) => {
     $("#btnSkip").prop("disabled", false);
     $("#timerOnRoundStart").show();
 
@@ -157,21 +159,21 @@ socket.on('next round', function(usernames, word, isArtist) {
     resetCanvas();
 });
 
-socket.on('give hint', function(hint) {
+socket.on('give hint', hint => {
     $("#pHint").html("Hint: " + hint);
 });
 
 /*********** SOCIAL CHAT ***********/
-$('#formChat').submit(function() {
+$('#formChat').submit(() => {
     if ($('#txtChat').val() != '') {
-        socket.emit('chat message', updateTime() + $('#txtChat').val());
+        socket.emit('chat message', getTime() + $('#txtChat').val());
         $('#txtChat').val('');
     }
     return false;
 });
 
 /*********** GAME CHAT ***********/
-$('#formGame').submit(function() {
+$('#formGame').submit(() => {
     if ($('#txtGame').val() != '') {
         socket.emit('game message', clientName, $('#txtGame').val(), getWord(), undefined);
         $('#txtGame').val('');
@@ -179,11 +181,11 @@ $('#formGame').submit(function() {
     return false;
 });
 
-canvas.observe('mouse:up', function() {
+canvas.observe('mouse:up', () => {
     socket.emit('draw', JSON.stringify(canvas));
 });
 
-function updateTime() {
+function getTime() {
     var date = new Date();
     var time = date.toLocaleTimeString();
     var message = "[" + time + "] " + clientName + ": ";
@@ -193,11 +195,11 @@ function updateTime() {
 function refreshPlayerList(userlist) {
     $('.player-list-item').remove();
 
-    userlist.sort(function(a, b) {
+    userlist.sort((a, b) => {
         return b.points - a.points;
     })
 
-    for (var i = 0; i < userlist.length; i++) {
+    for (let i = 0; i < userlist.length; i++) {
         if (userlist[i].isCorrect) {
             $('#listPlayers').append($('<li style = "color: red" class = "list-group-item player-list-item">').text(userlist[i].username + " (" + userlist[i].points + ")"));
         } else if (userlist[i].isDrawing) {
@@ -226,8 +228,8 @@ socket.on('reset', function(users) {
 });
 
 function generateRandomUser() {
-    var num = (Math.floor((Math.random() * 1000) + 1)).toString();
-    var user = "guest_user" + num;
+    let num = (Math.floor((Math.random() * 1000) + 1)).toString();
+    let user = "guest_user" + num;
     return user;
 }
 
@@ -254,7 +256,7 @@ function removeArtistPrivileges() {
 }
 
 function getWord() {
-    var rand = (Math.floor((Math.random() * words.length) + 1));
+    let rand = (Math.floor((Math.random() * words.length) + 1));
     return words[rand];
 }
 

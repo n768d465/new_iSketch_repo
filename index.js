@@ -22,7 +22,6 @@ const activityTime = 25 * 1000;
 
 var users = [];
 var artistIndex = 0;
-var activity = 0;
 
 var timer;
 var alarmTime;
@@ -32,9 +31,9 @@ var word_history = [];
 var wordIndex = 0;
 var hint = "";
 
-io.on('connection', function(socket) {
+io.on('connection', socket => {
 
-    socket.on('add user', function(name, word) {
+    socket.on('add user', (name, word) => {
         var player = {
             username: name,
             points: 0,
@@ -43,95 +42,90 @@ io.on('connection', function(socket) {
             id: socket.id,
         };
 
-
-        if (users.length === 0) {
-            player.isDrawing = true;
-        }
-
+        if (users.length === 0) player.isDrawing = true;
 
         users.push(player);
         word_history.push(word);
 
         adjustTimer();
-        if (users.length == 2) {
+
+        if (users.length == 2){
             setRoundTimer();
         }
+
         io.sockets.in(player.id).emit('add user', users, getWord(), player.isDrawing);
         io.emit('user joined', users);
         console.log(users);
     });
 
-    socket.on('chat message', function(msg, msgType) {
+    socket.on('chat message', (msg, msgType) => {
         io.emit('chat message', msg, msgType);
         console.log(msg);
     });
 
-    socket.on('game message', function(name, msg, word, msgType) {
+    socket.on('game message', (name, msg, word, msgType) => {
         let correctPlayers = getCorrectPlayers(users);
-        var pointsToGive;
 
-        if(correctPlayers <= 5){
+        let guess = msg.toLowerCase();
+        let correctWord = word_history[wordIndex];
+
+        let pointsToGive;
+
+        if (correctPlayers <= 5) {
             pointsToGive = 10 - getCorrectPlayers(users);
-        }
-        else{
+        } else {
             pointsToGive = 5;
         }
 
-        var player = playerStatus(name);
+        let player = playerStatus(name);
 
-        if (msg.toLowerCase().includes(word_history[wordIndex])) {
+        if (guess.includes(correctWord)) {
 
             player.isCorrect = true;
             player.points += pointsToGive;
 
-            io.emit('game message', name + " has found the word!\n", undefined, undefined, 'GAME');
+            io.emit('game message', name + " has found the word!\n", undefined, undefined, 'CORRECT GUESS');
             io.emit('refresh player list', users, player.isCorrect);
 
-            io.sockets.in(player.id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", undefined, undefined, 'CORRECT-GUESS');
-            io.sockets.in(player.id).emit('game message', "You earned " + pointsToGive + " points this round.\n", undefined, undefined, 'CORRECT-GUESS');
-            io.sockets.in(player.id).emit('game message', "You can speak here again once the round ends.\n", undefined, undefined, 'CORRECT-GUESS');
+            io.sockets.in(player.id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", undefined, undefined, 'CORRECT GUESS');
+            io.sockets.in(player.id).emit('game message', "You earned " + pointsToGive + " points this round.\n", undefined, undefined, 'GAME');
+            io.sockets.in(player.id).emit('game message', "You can speak here again once the round ends.\n", undefined, undefined, 'GAME');
             io.sockets.in(player.id).emit('lock game input', player.isCorrect, false, word_history[wordIndex]);
 
             if (getCorrectPlayers(users) == 1) {
-                //getArtist(users).points += 10;
                 getArtist(users).points++;
 
                 io.emit('fire off timer', timer / 10);
                 io.emit('game message', "Round will end in " + timer / 1000 + " seconds.\n", undefined, undefined, 'NOTICE');
 
                 startTimer(word);
-
             }
-        }
-        else if(diceCoefficient(msg.toLowerCase(), word_history[wordIndex]) >= 0.6){
-            io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", undefined, undefined, 'CLOSE-GUESS');
-        }
-        else {
+
+        } else if (diceCoefficient(guess, correctWord) >= 0.51) {
+            io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", undefined, undefined, 'CLOSE GUESS');
+        } else {
             io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
         }
         console.log(name + ": " + msg);
 
     })
 
-    socket.on('draw', function(data) {
+    socket.on('draw', data => {
         io.emit('draw', data);
         clearTimeout(activityTimer);
     });
 
-    socket.on('skip round', function(name, word) {
-
+    socket.on('skip round', (name, word) => {
         if (users.length <= 1) {
             io.sockets.in(playerStatus(name).id).emit('private game message ', false, true);
-        }
-        else {
+        } else {
             io.emit('game message', "The artist has skipped the round.\n", undefined, undefined, 'NOTICE');
             setNextRound();
             word_history.push(word);
         }
-
     });
 
-    socket.on('give hint', function(hintCount, name) {
+    socket.on('give hint', (hintCount, name) => {
         let currentWord = word_history[wordIndex];
 
         if (hintCount === 1) {
@@ -154,35 +148,38 @@ io.on('connection', function(socket) {
         io.emit('give hint', hint);
     });
 
-    socket.on('get word', function(word) {
+    socket.on('get word', word => {
         word_history.push(word);
     });
 
+    socket.on('disconnect', () => {
 
-    socket.on('disconnect', function() {
-        var isDrawing = playerID(socket.id).isDrawing;
-        var name = playerID(socket.id).username;
+        if(playerID(socket.id) != null){
+            let isDrawing = playerID(socket.id).isDrawing;
+            let name = playerID(socket.id).username;
 
-        console.log(name + " has left the game.\n");
+            console.log(name + " has left the game.\n");
 
-        if (isDrawing && users.length > 0) {
-            if (users.length == 0) {
-                artistIndex = 0;
+            if (isDrawing && users.length > 0) {
+                if (users.length == 0) {
+                    artistIndex = 0;
+                }
+                setNextRound();
             }
-            setNextRound();
+
+            if (users.length == 1) {
+                clearTimeout(roundTimer);
+                clearTimeout(activityTimer);
+            }
+
+            removePlayerByID(socket.id);
+            adjustTimer();
+
+            io.emit('remove user', users);
+            io.emit('chat message', name + " has left the game.\n", 'SERVER');
+            console.log(users);
         }
 
-
-        if (users.length == 1) {
-            clearTimeout(roundTimer);
-            clearTimeout(activityTimer);
-        }
-        removePlayerByID(socket.id);
-        adjustTimer();
-
-        io.emit('remove user', users);
-        io.emit('chat message', name + " has left the game.\n", 'SERVER');
-        console.log(users);
     });
 
 });
@@ -193,21 +190,21 @@ function removePlayerByID(playerName) {
     /* Needed a way to get the index of an object inside an array, found this method:
      * http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
      */
-    let index = users.map(function(e) {
+    let index = users.map(e => {
         return e.id;
     }).indexOf(playerName);
 
-    if(index != null){
+    if (index != null) {
         users.splice(index, 1);
     }
 }
 
 function playerStatus(player) {
-    let index = users.map(function(p) {
+    let index = users.map(p => {
         return p.username;
     }).indexOf(player)
 
-    if(index != null){
+    if (index != null) {
         return users[index];
     }
 
@@ -225,12 +222,10 @@ var setNextRound = function() {
     resetPlayerStatus(users);
     io.emit('reset', users)
 
-    var oldArtist = users.map(function(p){
+    var oldArtist = users.map(p => {
         return p.isDrawing
     }).indexOf(true);
 
-
-    //var oldArtist = artistIndex % users.length;
     var newArtist = (oldArtist + 1) % users.length;
 
     users[oldArtist].isDrawing = false;
@@ -255,8 +250,6 @@ var setNextRound = function() {
         undefined,
         'GAME');
 
-    artistIndex++;
-    activity = 0;
     setRoundTimer();
 }
 
@@ -274,15 +267,13 @@ function getCorrectPlayers(arr) {
 function resetPlayerStatus(arr) {
     for (let i = 0; i < arr.length; i++) {
         arr[i].isCorrect = false;
-        //arr[i].isDrawing = false;
     }
 }
 
-
 var getArtist = function() {
-    let index = users.map(function(p) {
-            return p.isDrawing;
-        }).indexOf(true);
+    let index = users.map(p => {
+        return p.isDrawing;
+    }).indexOf(true);
 
     return users[index];
 }
@@ -300,8 +291,8 @@ function adjustTimer() {
 function startTimer(word) {
     clearTimeout(roundTimer);
     clearTimeout(activityTimer);
-    alarmTime = setTimeout(function() {
-        io.emit('game message', " The round has ended. The word was: " + word_history[wordIndex] + "\n", undefined, undefined, 'NEW-ROUND');
+    alarmTime = setTimeout(() => {
+        io.emit('game message', " The round has ended. The word was: " + word_history[wordIndex] + "\n", undefined, undefined, 'NEW ROUND');
         setNextRound();
         word_history.push(word);
 
@@ -315,37 +306,35 @@ function setRoundTimer() {
     io.emit('round timer', roundTime);
     console.log("Round timer started..\n");
 
-    roundTimer = setTimeout(function() {
+    roundTimer = setTimeout(() => {
         io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
         setNextRound();
     }, roundTime);
     console.log("Activity timer started..\n");
 
-    activityTimer = setTimeout(function() {
+    activityTimer = setTimeout(() => {
         io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
         setNextRound();
     }, activityTime);
 
 }
 
-function diceCoefficient(str1, str2){
-    var bigramsStr1 = [];
-    var bigramsStr2 = [];
-    for(let i = 0; i < str1.length - 1; i++){
-        bigramsStr1.push(str1.substr(i,2));
+function diceCoefficient(str1, str2) {
+    let bigramsStr1 = [];
+    let bigramsStr2 = [];
+
+    for (let i = 0; i < str1.length - 1; i++) {
+        bigramsStr1.push(str1.substr(i, 2));
     }
 
-    for(let i = 0; i < str2.length - 1; i++){
-        bigramsStr2.push(str2.substr(i,2));
+    for (let i = 0; i < str2.length - 1; i++) {
+        bigramsStr2.push(str2.substr(i, 2));
     }
 
-    var intersection = bigramsStr1.filter(function(n){
+    let intersection = bigramsStr1.filter(n => {
         return bigramsStr2.indexOf(n) !== -1;
     });
 
-    console.log(intersection);
-
-    var score = (2 * (intersection.length)) / (bigramsStr1.length + bigramsStr2.length);
-    console.log(score);
+    let score = (2 * (intersection.length)) / (bigramsStr1.length + bigramsStr2.length);
     return score;
 }
