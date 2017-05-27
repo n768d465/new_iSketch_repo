@@ -5,7 +5,7 @@ var clientName = "";
 $("#txtModal").val(generateRandomUser());
 
 $('#formModal').submit(function() {
-    clientName = $('#txtModal').val();
+    clientName = $('#txtModal').val().replace(/[.*+?^${}()|[\]\\]\s/g, "");
     $('#myModal').modal('hide');
 
     socket.emit('add user', clientName, getWord());
@@ -22,14 +22,12 @@ const nextArtistSound = document.getElementById("nextArtistSound");
 const endOfRoundSound = document.getElementById("endOfRoundSound");
 const closeAlert = document.getElementById("closeAlert");
 
+//
 socket.on('user joined', users => {
     userJoinedSound.play();
     refreshPlayerList(users);
 });
 
-socket.on('user_left', msg => {
-    $('#socialChatList').append(msg + '\n')
-});
 
 socket.on('chat message', (msg, msgType) => {
     switch (msgType) {
@@ -49,7 +47,6 @@ socket.on('game message', function(msg, users, word, msgType)  {
     switch (msgType) {
         case 'CORRECT GUESS':
             $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
-            alertSound.play();
             break;
         case 'GAME':
         case 'NOTICE':
@@ -86,7 +83,7 @@ socket.on('lock game input', (isCorrect, skipped, word) => {
         $("#txtGame").prop("disabled", true);
         $("#btnGame").prop("disabled", true);
         $("#txtGame").val("You found the word: " + word + "!");
-
+        alertSound.play();
     }
     if (skipped) {
         $("#txtAreaGame").append("You cannot skip because you are the only person in the room.\n");
@@ -116,7 +113,7 @@ socket.on('fire off timer', (time, isClicked) => {
 
 socket.on('remove user', (usernames, msg) => {
     refreshPlayerList(usernames);
-    if (usernames.length == 1) {
+    if (usernames.length === 1) {
         clearInterval(roundCounter);
         $("#timerOnRoundStart").empty();
 

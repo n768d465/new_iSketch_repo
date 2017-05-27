@@ -86,10 +86,12 @@ span {
     text-shadow: 1px 1px black;
     font-size: 100% margin: auto;
     line-height: 12px;
+    word-wrap: normal;
 }
 
 .chat-list-item:nth-child(even) {
     background: #333333;
+    word-wrap: normal;
 }
 
 .hidden {
