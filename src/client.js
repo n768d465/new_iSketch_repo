@@ -22,12 +22,11 @@ const nextArtistSound = document.getElementById("nextArtistSound");
 const endOfRoundSound = document.getElementById("endOfRoundSound");
 const closeAlert = document.getElementById("closeAlert");
 
-//
+
 socket.on('user joined', users => {
     userJoinedSound.play();
     refreshPlayerList(users);
 });
-
 
 socket.on('chat message', (msg, msgType) => {
     switch (msgType) {
@@ -46,6 +45,7 @@ socket.on('game message', function(msg, users, word, msgType)  {
 
     switch (msgType) {
         case 'CORRECT GUESS':
+            alertSound.play();
             $('#gameChatList').append($('<li style = "color: #33cc00; font-weight:bold" class = "list-group-item chat-list-item">').text(msg));
             break;
         case 'GAME':
@@ -156,6 +156,7 @@ socket.on('next round', (usernames, word, isArtist) => {
     resetCanvas();
 });
 
+
 socket.on('give hint', hint => {
     $("#pHint").html("Hint: " + hint);
 });
@@ -178,10 +179,23 @@ $('#formGame').submit(() => {
     return false;
 });
 
+/*
+ * On mouse up event, the drawing gets sent to all users in the server.  The
+ * canvas drawing gets converted in JSON format and sends the JSON data to the
+ * server.
+ */
 canvas.observe('mouse:up', () => {
     socket.emit('draw', JSON.stringify(canvas));
+    console.log(JSON.stringify(canvas));
 });
 
+/**
+ * Gets the current time in format HH:MM AM/PM. This is called anytime a username
+ * sends a message in the social chat list.
+ *
+ * @return {String} The current time, which gets appended at the start of each
+ *                  message sent.
+ */
 function getTime() {
     var date = new Date();
     var time = date.toLocaleTimeString();
@@ -189,6 +203,13 @@ function getTime() {
     return message;
 }
 
+/**
+ * Refreshes the userlist that is on the top left of the page. The userlist
+ * gets refreshed anytime a user guesses the correct word, a user joins, or
+ * a user leaves.
+ * @param  {Object} userlist The array holding the users. It is typically the
+ *                           userlist sent by the server (index.js).
+ */
 function refreshPlayerList(userlist) {
     $('.player-list-item').remove();
 
@@ -208,6 +229,10 @@ function refreshPlayerList(userlist) {
 
 }
 
+/*
+ * Resets some HTML5 elements to their default settings to all users.
+ * Used to help start a new round.
+ */
 socket.on('reset', function(users) {
     $("#txtGame").prop("disabled", false);
     $("#btnGame").prop("disabled", false);
@@ -224,13 +249,25 @@ socket.on('reset', function(users) {
     $("#pHint").html("");
 });
 
+/**
+ * Generates a random username. Used for the login modal.
+ *
+ * @return {string} The randomly generated username. Possible random
+ * usernames are between guest_user1 and guest_user1000.
+ */
 function generateRandomUser() {
     let num = (Math.floor((Math.random() * 1000) + 1)).toString();
     let user = "guest_user" + num;
     return user;
 }
 
-function addArtistPrivileges() {
+/**
+ * Adds or modifies HTML5 elements needed for the artist to draw on the canvas
+ * for a single round.  Some additions include the paintbrush, eraser, undo
+ * button, and some modifications include disabling the game text input and
+ * button.
+ */
+var addArtistPrivileges = function() {
     $(".drawingTools").show();
     $("#txtGame").val("You cannot speak here since you are the artist.");
     $("#txtGame").prop("disabled", true);
@@ -241,10 +278,13 @@ function addArtistPrivileges() {
     $("#btnGame").prop("disabled", true);
 
     canvas.isDrawingMode = true;
-    canvas.hoverCursor = "pointer";
+    canvas.hoverCursor = 'pointer';
 }
 
-function removeArtistPrivileges() {
+/**
+ * Removes all HTML elements needed to draw on the canvas.
+ */
+var removeArtistPrivileges = function()  {
     canvas.isDrawingMode = false;
     canvas.hoverCursor = "default";
 
@@ -252,11 +292,19 @@ function removeArtistPrivileges() {
     $("#btnGame").prop("disabled", false);
 }
 
-function getWord() {
+/**
+ * Gets a word from the word list words.js
+ * @returns {string} A word from the word list.
+ */
+var getWord = function() {
     let rand = (Math.floor((Math.random() * words.length) + 1));
     return words[rand];
 }
 
+/*
+ * Sends the necessary data (the username in this case) to have the server
+ * remove a user from the game.
+ */
 var removeUser = function() {
     socket.emit('remove user', clientName, getWord());
 }

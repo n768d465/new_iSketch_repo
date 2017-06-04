@@ -221,6 +221,8 @@ span {
     margin: auto;
 }
 
+#canvasDiv{}
+
 #labelAbout:hover, #labelInfo:hover {
     transition: color 0.5s ease;
     color: #008ea8;

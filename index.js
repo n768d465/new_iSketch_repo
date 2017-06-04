@@ -1,6 +1,5 @@
-
-
 "use strict";
+
 // JS includes.
 const express = require('express'),
     app = express();
@@ -58,6 +57,7 @@ io.on('connection', socket => {
 
         if (users.length == 2){
             setRoundTimer();
+            io.emit('chat message', "The timer has started and a new game begins.", 'SERVER');
         }
 
         io.sockets.in(player.id).emit('add user', users, getWord(), player.isDrawing);
@@ -96,7 +96,7 @@ io.on('connection', socket => {
             player.points += pointsToGive;
 
             // Sends a message to all connected users that the user found the word.
-            io.emit('game message', name + " has found the word!\n", undefined, undefined, 'NOTICE');
+            io.emit('game message', name + " has found the word!\n", undefined, undefined, 'CORRECT GUESS');
 
             // Sends the newly updated userlist so the points can be displayed
             io.emit('refresh player list', users, player.isCorrect);
@@ -130,7 +130,8 @@ io.on('connection', socket => {
 
     })
 
-    // Sends canvas data in JSON format to all connected users.  In other words,
+    // Sends canvas data in JSON format to all connected users. The client side
+    // then loads the JSON data and renders it to the canvas. In other words,
     // this is how the drawing gets displayed to all uesrs.
     socket.on('draw', data => {
         io.emit('draw', data);
@@ -187,17 +188,12 @@ io.on('connection', socket => {
 
             console.log(name + " has left the game.\n");
 
+            // Clears all timers if there is only one player left.
 
             // If the disconected user was the artist, a new artist
             // gets selected and a new round begins.
             if (isDrawing && users.length > 0) {
                 setNextRound();
-            }
-
-            // Clears all timers if there is only one player left.
-            if (users.length == 1) {
-                clearTimeout(roundTimer);
-                clearTimeout(activityTimer);
             }
 
             removePlayerByID(socket.id);
@@ -400,24 +396,28 @@ var setRoundTimer = function () {
     clearTimeout(activityTimer);
 
     io.emit('round timer', roundTime);
-    console.log("Round timer started..\n");
 
-    // This is the standard three minute timer that is fired off each round.
-    // It will always fire off when a new round begins, and there are at least
-    // two players in each room.
-    roundTimer = setTimeout(() => {
-        io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
-        setNextRound();
-    }, roundTime);
-    console.log("Activity timer started..\n");
 
-    // This timer checks to see if the artist is active. If the artist does not
-    // draw anything within the first 25 seconds of the round, this timer will
-    // consider the artist asleep and will start a new round.
-    activityTimer = setTimeout(() => {
-        io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
-        setNextRound();
-    }, activityTime);
+    if(users.length > 1){
+        console.log("Round timer started..\n");
+        // This is the standard three minute timer that is fired off each round.
+        // It will always fire off when a new round begins, and there are at least
+        // two players in each room.
+        roundTimer = setTimeout(() => {
+            io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
+            setNextRound();
+        }, roundTime);
+        console.log("Activity timer started..\n");
+
+        // This timer checks to see if the artist is active. If the artist does not
+        // draw anything within the first 25 seconds of the round, this timer will
+        // consider the artist asleep and will start a new round.
+        activityTimer = setTimeout(() => {
+            io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
+            setNextRound();
+        }, activityTime);
+    }
+
 
 }
 
@@ -433,7 +433,7 @@ var setRoundTimer = function () {
  *                 The seconds string to compare, which is typcally the correct
  *                 word in a round.
  * @returns {number}
- *                 A number s calculated by the Sorensen-Dice formula,
+ *                 A number s calculated by the Sorensen-Dice formula, where
  *                 0 <= s <= 1.
  */
 var diceCoefficient = function(str1, str2) {
