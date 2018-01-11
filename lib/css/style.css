@@ -135,7 +135,7 @@ span {
 
 #lineWidth {
     display: inline;
-    magin: 0px;
+    margin: 0px;
     padding: 0px;
 }
 
@@ -221,8 +221,20 @@ span {
     margin: auto;
 }
 
-#canvasDiv{}
+#canvasDiv{
+    height: 95%;
+    margin:auto;
+    text-align: center;
+}
 
+.canvas-container{
+    margin: 100px;
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 #labelAbout:hover, #labelInfo:hover {
     transition: color 0.5s ease;
     color: #008ea8;

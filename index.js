@@ -22,7 +22,7 @@ http.listen(80, function() {
     console.log('Connected to *:80. Listening...');
 });
 
-const roundTime = 180 * 1000;       /* Time for a standard round (3 minutes) */
+const roundTime = 120 * 1000;       /* Time for a standard round (2 minutes) */
 const activityTime = 25 * 1000;     /* Time before considered asleep
                                      * (25 seconds)
                                      */
@@ -55,7 +55,7 @@ io.on('connection', socket => {
 
         adjustTimer();
 
-        if (users.length == 2){
+        if (users.length === 2){
             setRoundTimer();
             io.emit('chat message', "The timer has started and a new game begins.", 'SERVER');
         }
@@ -96,16 +96,16 @@ io.on('connection', socket => {
             player.points += pointsToGive;
 
             // Sends a message to all connected users that the user found the word.
-            io.emit('game message', name + " has found the word!\n", undefined, undefined, 'CORRECT GUESS');
+            io.emit('game message', name + " has found the word!\n", 'CORRECT GUESS');
 
             // Sends the newly updated userlist so the points can be displayed
             io.emit('refresh player list', users, player.isCorrect);
 
             // Sends private messages to the specific correct user, telling that
             // user that they found the word and how many points they earned.
-            io.sockets.in(player.id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", undefined, undefined, 'CORRECT GUESS');
-            io.sockets.in(player.id).emit('game message', "You earned " + pointsToGive + " points this round.\n", undefined, undefined, 'GAME');
-            io.sockets.in(player.id).emit('game message', "You can speak here again once the round ends.\n", undefined, undefined, 'GAME');
+            io.sockets.in(player.id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", 'CORRECT GUESS');
+            io.sockets.in(player.id).emit('game message', "You earned " + pointsToGive + " points this round.\n", 'GAME');
+            io.sockets.in(player.id).emit('game message', "You can speak here again once the round ends.\n", 'GAME');
 
             // Prevents the specific correct from sending any more messages
             // until the round is over.
@@ -116,15 +116,15 @@ io.on('connection', socket => {
                 getArtist(users).points++;
 
                 io.emit('fire off timer', timer / 10);
-                io.emit('game message', "Round will end in " + timer / 1000 + " seconds.\n", undefined, undefined, 'NOTICE');
+                io.emit('game message', "Round will end in " + timer / 1000 + " seconds.\n",'NOTICE');
 
                 startTime(word);
             }
 
         } else if (diceCoefficient(guess, correctWord) >= 0.49) {
-            io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", undefined, undefined, 'CLOSE GUESS');
+            io.sockets.in(player.id).emit('game message', "'" + msg + "' " + "is close!", 'CLOSE GUESS');
         } else {
-            io.emit('game message', name + ": " + msg + "\n", users, playerStatus(name).isCorrect);
+            io.emit('game message', name + ": " + msg + "\n", null);
         }
         console.log(name + ": " + msg);
 
@@ -142,7 +142,7 @@ io.on('connection', socket => {
         if (users.length <= 1) {
             io.sockets.in(playerStatus(name).id).emit('private game message ', false, true);
         } else {
-            io.emit('game message', "The artist has skipped the round.\n", undefined, undefined, 'NOTICE');
+            io.emit('game message', "The artist has skipped the round.\n", 'NOTICE');
             setNextRound();
             word_history.push(word);
         }
@@ -156,18 +156,18 @@ io.on('connection', socket => {
             for (let i = 0; i < currentWord.length; i++) {
                 hint += "_ ";
             }
-            io.emit('game message', "HINT: The word has " + currentWord.length + " letters.\n", undefined, undefined, 'HINT');
+            io.emit('game message', "HINT: The word has " + currentWord.length + " letters.\n", 'HINT');
         } else if (hintCount === 2) {
             var subhint = hint.slice(1, hint.length);
             hint = currentWord.charAt(0) + subhint
-            io.emit('game message', "HINT: The word begins with: " + currentWord.charAt(0) + "\n", undefined, undefined, 'HINT');
+            io.emit('game message', "HINT: The word begins with: " + currentWord.charAt(0) + "\n", 'HINT');
 
         } else if (hintCount === 3) {
             var subhint = hint.slice(3, hint.length);
             hint = currentWord.charAt(0) + " " + currentWord.charAt(1) + subhint
-            io.emit('game message', "HINT: The word begins with: " + currentWord.charAt(0) + currentWord.charAt(1) + "\n", undefined, undefined, 'HINT');
+            io.emit('game message', "HINT: The word begins with: " + currentWord.charAt(0) + currentWord.charAt(1) + "\n", 'HINT');
         } else {
-            io.sockets.in(playerStatus(name).id).emit('game message', "You cannot give any more hints.\n");
+            io.sockets.in(playerStatus(name).id).emit('game message', "You cannot give any more hints.\n", null);
         }
         io.emit('give hint', hint);
     });
@@ -192,13 +192,13 @@ io.on('connection', socket => {
 
             // If the disconected user was the artist, a new artist
             // gets selected and a new round begins.
-            if (isDrawing && users.length > 0) {
-                setNextRound();
-            }
+
 
             removePlayerByID(socket.id);
             adjustTimer();
-
+            if (isDrawing && users.length > 0) {
+                setNextRound();
+            }
             io.emit('remove user', users);
             io.emit('chat message', name + " has left the game.\n", 'SERVER');
             console.log(users);
@@ -354,7 +354,7 @@ var getArtist = function() {
  *  This generates the message that tells the artist what to draw each round.
  */
 var getWord = function() {
-    return "Your word is: " + word_history[wordIndex] + ". Remember, drawing letters is NOT allowed.";
+    return "Your word is: " + word_history[wordIndex] + ".";
 }
 
 /**
@@ -381,7 +381,7 @@ var startTime = function(word) {
     clearTimeout(roundTimer);
     clearTimeout(activityTimer);
     alarmTimer = setTimeout(() => {
-        io.emit('game message', " The round has ended. The word was: " + word_history[wordIndex] + "\n", undefined, undefined, 'NEW ROUND');
+        io.emit('game message', " The round has ended. The word was: " + word_history[wordIndex] + "\n", 'NEW ROUND');
         setNextRound();
         word_history.push(word);
 
@@ -404,7 +404,7 @@ var setRoundTimer = function () {
         // It will always fire off when a new round begins, and there are at least
         // two players in each room.
         roundTimer = setTimeout(() => {
-            io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", undefined, undefined, 'NOTICE');
+            io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", 'NOTICE');
             setNextRound();
         }, roundTime);
         console.log("Activity timer started..\n");
@@ -413,7 +413,7 @@ var setRoundTimer = function () {
         // draw anything within the first 25 seconds of the round, this timer will
         // consider the artist asleep and will start a new round.
         activityTimer = setTimeout(() => {
-            io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", undefined, undefined, 'NOTICE');
+            io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", 'NOTICE');
             setNextRound();
         }, activityTime);
     }
@@ -452,6 +452,6 @@ var diceCoefficient = function(str1, str2) {
         return bigramsStr2.indexOf(n) !== -1;
     });
 
-    let s = (2 * (intersection.length)) / (bigramsStr1.length + bigramsStr2.length);
-    return s;
+    return (2 * (intersection.length)) / (bigramsStr1.length + bigramsStr2.length);
+
 }

@@ -5,7 +5,7 @@
 const defaultBackgroundColor = "#fff";
 const defaultBrushColor = "#000";
 
-var canvas = new fabric.Canvas('c');
+var canvas = new fabric.Canvas('c', {width: 575, height:575});
 var hintCount = 0;
 canvas.isDrawingMode = true;
 

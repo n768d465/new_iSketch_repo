@@ -41,7 +41,7 @@ socket.on('chat message', (msg, msgType) => {
     $('#socialChatList').scrollTop($('#socialChatList')[0].scrollHeight);
 });
 
-socket.on('game message', function(msg, users, word, msgType)  {
+socket.on('game message', function(msg, msgType)  {
 
     switch (msgType) {
         case 'CORRECT GUESS':
