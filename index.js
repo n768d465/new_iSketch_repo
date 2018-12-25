@@ -7,13 +7,13 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 // Directories
-app.use(express.static(__dirname + '/lib'));
-app.use(express.static(__dirname + '/src'));
+app.use(express.static(__dirname + '/docs/lib'));
+app.use(express.static(__dirname + '/docs/src'));
 app.use(express.static(__dirname + '/node_modules'));
 
 // Obtains the HTML file to establish a connection with.
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/docs/index.html');
 });
 
 
