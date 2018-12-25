@@ -12,13 +12,13 @@ app.use(express.static(__dirname + '/src'));
 app.use(express.static(__dirname + '/node_modules'));
 
 // Obtains the HTML file to establish a connection with.
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
 
 // Uses the TCP port to establish a connection.
-http.listen(8080, function() {
+http.listen(8080, function () {
     console.log('Connected to *:80. Listening...');
 });
 
@@ -55,7 +55,7 @@ io.on('connection', socket => {
 
         adjustTimer();
 
-        if (users.length === 2){
+        if (users.length === 2) {
             setRoundTimer();
             io.emit('chat message', "The timer has started and a new game begins.", 'SERVER');
         }
@@ -116,7 +116,7 @@ io.on('connection', socket => {
                 getArtist(users).points++;
 
                 io.emit('fire off timer', timer / 10);
-                io.emit('game message', "Round will end in " + timer / 1000 + " seconds.\n",'NOTICE');
+                io.emit('game message', "Round will end in " + timer / 1000 + " seconds.\n", 'NOTICE');
 
                 startTime(word);
             }
@@ -182,7 +182,7 @@ io.on('connection', socket => {
 
         // Finds the player by their socket id, then removes them from the
         // userlist.
-        if(playerID(socket.id) != null){
+        if (playerID(socket.id) != null) {
             let isDrawing = playerID(socket.id).isDrawing;
             let name = playerID(socket.id).username;
 
@@ -251,7 +251,7 @@ function playerStatus(player) {
  *  @param {string} sid The players' socket ID.
  */
 function playerID(sid) {
-    let index = users.map(function(p) {
+    let index = users.map(function (p) {
         return p.id;
     }).indexOf(sid)
     return users[index];
@@ -261,7 +261,7 @@ function playerID(sid) {
 /**
  *  Starts a new round.
  */
-var setNextRound = function() {
+var setNextRound = function () {
 
 
     // Any hints given in the round are cleared, and allows players to make
@@ -342,7 +342,7 @@ function resetPlayerStatus(arr) {
  *  Gets the current artist. This is helper function for setting
  *  the next round.
  */
-var getArtist = function() {
+var getArtist = function () {
     let index = users.map(p => {
         return p.isDrawing;
     }).indexOf(true);
@@ -353,7 +353,7 @@ var getArtist = function() {
 /**
  *  This generates the message that tells the artist what to draw each round.
  */
-var getWord = function() {
+var getWord = function () {
     return "Your word is: " + word_history[wordIndex] + ".";
 }
 
@@ -377,7 +377,7 @@ function adjustTimer() {
  *  @param {string} word
  *                  The new word to add to the word list when the round ends.
  */
-var startTime = function(word) {
+var startTime = function (word) {
     clearTimeout(roundTimer);
     clearTimeout(activityTimer);
     alarmTimer = setTimeout(() => {
@@ -398,7 +398,7 @@ var setRoundTimer = function () {
     io.emit('round timer', roundTime);
 
 
-    if(users.length > 1){
+    if (users.length > 1) {
         console.log("Round timer started..\n");
         // This is the standard three minute timer that is fired off each round.
         // It will always fire off when a new round begins, and there are at least
@@ -436,7 +436,7 @@ var setRoundTimer = function () {
  *                 A number s calculated by the Sorensen-Dice formula, where
  *                 0 <= s <= 1.
  */
-var diceCoefficient = function(str1, str2) {
+var diceCoefficient = function (str1, str2) {
     let bigramsStr1 = [];
     let bigramsStr2 = [];
 
