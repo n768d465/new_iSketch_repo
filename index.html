@@ -5,206 +5,231 @@
 	<link href="css\style.css" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	<link href='http://fonts.googleapis.com/css?family=Merienda+One' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Merienda+One' rel='stylesheet' type='text/css'>
 
-	<body>
-		<!-- Login modal -->
-		<div class="container" id="loginContainer">
-			<div class="modal fade" id="myModal" role="dialog">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h2>newSketch</h2>
-						</div>
-						<div class="modal-body">
-							<form id="formModal">
-								<div class="buttonHolder">
-									<label for="txtModal" id="lblModal">Welcome! Enter a username below </label>
-									<input type="text" class="form-control" id="txtModal" autofocus style="text-align: center;">
-									<button type="submit" class="btn btn-primary" id="btnModal">Enter game</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Modal that describes how to play the game. -->
-		<div class="container">
-			<div class="modal fade" id="instrModal" role="dialog">
+<body>
+	<!-- Login modal -->
+	<div class="container" id="loginContainer">
+		<div class="modal fade" id="myModal" role="dialog">
+			<div class="modal-dialog">
 				<div class="modal-content">
-					<div class="modal-body">
-						<h1>The Basics </h1>
-						<p class="pInstr">
-							The goal of this game is to guess the drawing that is made by the artist on the canvas. This game is played in rounds. For each round, an artist will be selected to draw a given word. Everyone else has to guess what that word is under the "Game" text
-							box. Each round lasts three minutes, but the timer will drop to 20 seconds (or 5 seconds if there are two players) as soon as the first correct guess is made. There are no penalties for wrong guesses, so guess anything that comes to your mind!
-
-							<br><br> The first person to correctly guess the word gets 10 points, second person gets nine, third gets eight, and so on.
-
-							<br><br> As the artist, you are given several tools that allow you to draw. You must draw the word given to you (otherwise nobody can guess it correctly!) You are not allowed to draw any letters. You can select different colors with the paintbrush
-							("🖌️") button, erase with the eraser ("&#x25B0;") button, and undo your previous stroke with the "&#x21A9;" button. You can also adjust the width of your strokes with the slider next to the undo button. The "clear" button will completely wipe
-							out any drawing you have made. The "skip" button will end the round early and select a new artist. You can give hints to what the word is with the "hint" button.
-
-							<br><br> Lastly, you can chat and socialize with other players under the "Social" text box. Guesses towards the drawing are NOT checked in this box.
-
-							<br><br> Got it? Good! You can click anywhere on this page to make this box disappear. Thank you for playing. I hope you have fun! - Neil Dunn
-						</p>
-						<h1>WARNING </h1>
-						<p class="pInstr">
-							This is still under development and may crash and burn unexpectedly. There is a known bug where a new artist does not get selected when a non-artist leaves the game. If this happens, just press "skip". Although I am actively searching for bugs and making
-							several test cases, I cannot guarantee this will run smoothly 100% of the time. If you think something happened that was not supposed to, please let me know.
-						</p>
+					<div class="modal-header">
+						<h2>newSketch</h2>
 					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Modal that displays when the "About" button is clicked.. -->
-
-		<div class="container">
-			<div class="modal fade" id="aboutModal" role="dialog">
-				<div class="modal-content">
 					<div class="modal-body">
-						<h1>About this game </h1>
-						<p class="pInstr">
-							This is a simple remake of an older flash game known as iSketch. I had the idea of making this as a final project for one of my courses at the University of Kansas, but instead I decided to make it during my free time.
-							<br><br>
-						</p>
-						<h1>About me </h1>
-						<p class="pInstr">
-							I am Neil Dunn, and I am a senior at the University of Kansas with a major in computer science and minor in mathematics. Throughout my career at KU, I've learned a variety of programming languages. My strongest languages as of right now are Javascript,
-							HTML5, CSS3 and C++. I have also done work in Haskell, Python 2.7, php, C, Java, and LaTeX.
-							<br><br>
-						</p>
-						<h1>Are you a developer? </h1>
-						<p class="pInstr">
-							This project is open source and is available on GitHub! You can find it at <a href=h ttps://github.com/n768d465/new_iSketch_repo> https://github.com/n768d465/new_iSketch_repo  </a><br> This project was made with:<br> jQuery - makes HTML manipulation/animation
-							with JavaScript easier.<br> Bootstrap 3: HTML/CSS/JS framework<br> Node.js: Event-driven JS library that executes server-side Javscript code.<br> fabric.js: HTML5 Canvas library that makes drawing/object manipulation simple.<br> Socket.io: JS library
-							for bidirectional, real-time communcation between server and client. Client-side code runs on the browser, uses Node.js for server-side.<br>
-							<br><br>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Main page content -->
-		<div class="background">
-			<br>
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-lg-6">
-						<div class="row">
-							<p id="assignedWord" align="center"></p>
-							<p id="pHint" align="center"></p>
-							<div class="col-md-4" id="playerColumn">
-								<label for="listPlayers">Players (Score)</label>
-								<ul class="list-group list-special" id="listPlayers">
-								</ul>
-							</div>
-							<form id="formGame">
-								<div class="col-md-8">
-									<label for="gameChatList">Game</label>
-									<ul class="list-group list-special" id="gameChatList">
-									</ul>
-									<div class="input-group">
-										<input type="text" class="form-control" id="txtGame" autocomplete="off">
-										<div class="input-group-btn">
-											<button type="submit" class="btn btn-primary" id="btnGame">Send</button>
-										</div>
-									</div>
-								</div>
-							</form>
-						</div>
-						<form id="formChat">
-							<div class="form-group">
-								<label for="socialChatList">Social</label>
-								<ul class="list-group list-special" id="socialChatList">
-									<li style="color:#33ccff" class="list-group-item chat-list-item"> Welcome to newSketch! A re-creation of an older online Pictionary game known as iSketch. </li>
-									<li style="color:#33ccff" class="list-group-item chat-list-item"> First time here? Make sure to click the "how to play" button to understand how this game works. </li>
-								</ul>
-								<div class="input-group">
-									<input type="text" class="form-control" autocomplete="off" id="txtChat">
-									<div class="input-group-btn">
-										<button type="submit" class="btn btn-primary" id="btnChat">Send</button>
-									</div>
-								</div>
-								<label id="lblUsername">Your username: </label><br>
-								<p id="labelInfo" data-toggle="modal" data-target="#instrModal">How To Play</button><br>
-								<p id="labelAbout" data-toggle="modal" data-target="#aboutModal">About</button>
+						<form id="formModal">
+							<div class="buttonHolder">
+								<label for="txtModal" id="lblModal">Welcome! Enter a username below </label>
+								<input type="text" class="form-control" id="txtModal" autofocus style="text-align: center;">
+								<button type="submit" class="btn btn-primary" id="btnModal">Enter game</button>
 							</div>
 						</form>
 					</div>
-					<div class="col-lg-6" id="canvasDiv">
-						<p id="timerOnRoundStart"></p>
-						<p id="timerOnFirstGuess"></p>
-						<nobr>
-							<div class="btn-group" role="group" aria-label="...">
-								<button type="button" id="btnClearCanvas" class="btn btn-info drawingTools">Clear</button>
-								<button type="button" id="btnSkip" class="btn btn-danger drawingTools">Skip</button>
-								<button type="button" id="btnHint" class="btn btn-warning drawingTools">Hint</button>
-							</div>
-							<div class="btn-group" role="group" aria-label="...">
-								<input id="btnColors" type="button" class="btn btn-default drawingTools" value="🖌️">
-								<input type="color" class="hidden drawingTools" id="colors">
-								<button type="button" id="btnEraser" class="btn btn-default drawingTools">&#x25B0;</button>
-								<button type="button" id="btnUndo" class="btn btn-default drawingTools">&#x21A9;</button>
-								<input class="drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style="width: 30%">
-							</div>
-							<div class = "canvas-container">
-								<canvas id="c" style="border:2px solid #888"></canvas>
-							</div>
-						</nobr>
-					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<!-- Audio clips -->
+	<!-- Modal that describes how to play the game. -->
+	<div class="container">
+		<div class="modal fade" id="instrModal" role="dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<h1>The Basics </h1>
+					<p class="pInstr">
+						The goal of this game is to guess the drawing that is made by the artist on the canvas. This game is played in
+						rounds. For each round, an artist will be selected to draw a given word. Everyone else has to guess what that
+						word is under the "Game" text
+						box. Each round lasts three minutes, but the timer will drop to 20 seconds (or 5 seconds if there are two
+						players) as soon as the first correct guess is made. There are no penalties for wrong guesses, so guess anything
+						that comes to your mind!
 
-		<audio id="alertSound">
-        	<source src = "sounds\sms-alert-1-daniel_simon.wav" type = "audio/wav">
-        </audio>
+						<br><br> The first person to correctly guess the word gets 10 points, second person gets nine, third gets eight,
+						and so on.
 
-		<audio id="userJoinedSound">
-        	<source src = "sounds\sms-alert-3-daniel_simon.mp3" type = "audio/mpeg">
-        </audio>
+						<br><br> As the artist, you are given several tools that allow you to draw. You must draw the word given to you
+						(otherwise nobody can guess it correctly!) You are not allowed to draw any letters. You can select different
+						colors with the paintbrush
+						("🖌️") button, erase with the eraser ("&#x25B0;") button, and undo your previous stroke with the "&#x21A9;"
+						button. You can also adjust the width of your strokes with the slider next to the undo button. The "clear" button
+						will completely wipe
+						out any drawing you have made. The "skip" button will end the round early and select a new artist. You can give
+						hints to what the word is with the "hint" button.
 
-		<audio id="nextArtistSound">
-        	<source src = "sounds\sms-alert-4-daniel_simon.wav" type = "audio/wav">
-        </audio>
+						<br><br> Lastly, you can chat and socialize with other players under the "Social" text box. Guesses towards the
+						drawing are NOT checked in this box.
 
-		<audio id="timer">
-        	<source src = "sounds\Processed Stopwatch Effect.mp3" type = "audio/mpeg">
-        </audio>
+						<br><br> Got it? Good! You can click anywhere on this page to make this box disappear. Thank you for playing. I
+						hope you have fun! - Neil Dunn
+					</p>
+					<h1>WARNING </h1>
+					<p class="pInstr">
+						This is still under development and may crash and burn unexpectedly. There is a known bug where a new artist does
+						not get selected when a non-artist leaves the game. If this happens, just press "skip". Although I am actively
+						searching for bugs and making
+						several test cases, I cannot guarantee this will run smoothly 100% of the time. If you think something happened
+						that was not supposed to, please let me know.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
-		<audio id="endOfRoundSound">
-        	<source src = "sounds\Correct Answer Sound Effect.mp3" type = "audio/mpeg">
-        </audio>
+	<!-- Modal that displays when the "About" button is clicked.. -->
 
-		<audio id="closeAlert">
-        	<source src = "sounds\closeAlert.wav" type = "audio/wav">
-        </audio>
+	<div class="container">
+		<div class="modal fade" id="aboutModal" role="dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<h1>About this game </h1>
+					<p class="pInstr">
+						This is a simple remake of an older flash game known as iSketch. I had the idea of making this as a final project
+						for one of my courses at the University of Kansas, but instead I decided to make it during my free time.
+						<br><br>
+					</p>
+					<h1>About me </h1>
+					<p class="pInstr">
+						I am Neil Dunn, and I am a senior at the University of Kansas with a major in computer science and minor in
+						mathematics. Throughout my career at KU, I've learned a variety of programming languages. My strongest languages
+						as of right now are Javascript,
+						HTML5, CSS3 and C++. I have also done work in Haskell, Python 2.7, php, C, Java, and LaTeX.
+						<br><br>
+					</p>
+					<h1>Are you a developer? </h1>
+					<p class="pInstr">
+						This project is open source and is available on GitHub! You can find it at <a href=h ttps://github.com/n768d465/new_iSketch_repo>
+						 https://github.com/n768d465/new_iSketch_repo </a> <br> This project was made with:<br> jQuery - makes HTML
+							manipulation/animation
+							with JavaScript easier.<br> Bootstrap 3: HTML/CSS/JS framework<br> Node.js: Event-driven JS library that
+							executes server-side Javscript code.<br> fabric.js: HTML5 Canvas library that makes drawing/object manipulation
+							simple.<br> Socket.io: JS library
+							for bidirectional, real-time communcation between server and client. Client-side code runs on the browser, uses
+							Node.js for server-side.<br>
+							<br><br>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
-		<!-- End audio clips -->
+	<!-- Main page content -->
+	<div class="background">
+		<br>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="row">
+						<p id="assignedWord" align="center"></p>
+						<p id="pHint" align="center"></p>
+						<div class="col-md-4" id="playerColumn">
+							<label for="listPlayers">Players (Score)</label>
+							<ul class="list-group list-special" id="listPlayers">
+							</ul>
+						</div>
+						<form id="formGame">
+							<div class="col-md-8">
+								<label for="gameChatList">Game</label>
+								<ul class="list-group list-special" id="gameChatList">
+								</ul>
+								<div class="input-group">
+									<input type="text" class="form-control" id="txtGame" autocomplete="off">
+									<div class="input-group-btn">
+										<button type="submit" class="btn btn-primary" id="btnGame">Send</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<form id="formChat">
+						<div class="form-group">
+							<label for="socialChatList">Social</label>
+							<ul class="list-group list-special" id="socialChatList">
+								<li style="color:#33ccff" class="list-group-item chat-list-item"> Welcome to newSketch! A re-creation of an
+									older online Pictionary game known as iSketch. </li>
+								<li style="color:#33ccff" class="list-group-item chat-list-item"> First time here? Make sure to click the "how
+									to play" button to understand how this game works. </li>
+							</ul>
+							<div class="input-group">
+								<input type="text" class="form-control" autocomplete="off" id="txtChat">
+								<div class="input-group-btn">
+									<button type="submit" class="btn btn-primary" id="btnChat">Send</button>
+								</div>
+							</div>
+							<label id="lblUsername">Your username: </label><br>
+							<p id="labelInfo" data-toggle="modal" data-target="#instrModal">How To Play</button><br>
+								<p id="labelAbout" data-toggle="modal" data-target="#aboutModal">About</button>
+						</div>
+					</form>
+				</div>
+				<div class="col-lg-6" id="canvasDiv">
+					<p id="timerOnRoundStart"></p>
+					<p id="timerOnFirstGuess"></p>
+					<nobr>
+						<div class="btn-group" role="group" aria-label="...">
+							<button type="button" id="btnClearCanvas" class="btn btn-info drawingTools">Clear</button>
+							<button type="button" id="btnSkip" class="btn btn-danger drawingTools">Skip</button>
+							<button type="button" id="btnHint" class="btn btn-warning drawingTools">Hint</button>
+						</div>
+						<div class="btn-group" role="group" aria-label="...">
+							<input id="btnColors" type="button" class="btn btn-default drawingTools" value="🖌️">
+							<input type="color" class="hidden drawingTools" id="colors">
+							<button type="button" id="btnEraser" class="btn btn-default drawingTools">&#x25B0;</button>
+							<button type="button" id="btnUndo" class="btn btn-default drawingTools">&#x21A9;</button>
+							<input class="drawingTools" type="range" value="4" min="0" max="150" id="lineWidth" style="width: 30%">
+						</div>
+						<div class="canvas-container">
+							<canvas id="c" style="border:2px solid #888"></canvas>
+						</div>
+					</nobr>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	</body>
+	<!-- Audio clips -->
 
-	<script src="socket.io/socket.io.js"></script>
-	<script src="jquery-3.1.1.js"></script>
-	<script src="bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
-	<script src="timers.js"></script>
-	<script src="fabric.js"></script>
-	<script src="words.js"></script>
-	<script src="canvas.js"></script>
-	<script src="client.js"></script>
-	<script>
-		$(document).ready(function() {
-			$('#myModal').modal({
-				backdrop: 'static'
-			})
-		});
-	</script>
+	<audio id="alertSound">
+		<source src="sounds\sms-alert-1-daniel_simon.wav" type="audio/wav">
+	</audio>
+
+	<audio id="userJoinedSound">
+		<source src="sounds\sms-alert-3-daniel_simon.mp3" type="audio/mpeg">
+	</audio>
+
+	<audio id="nextArtistSound">
+		<source src="sounds\sms-alert-4-daniel_simon.wav" type="audio/wav">
+	</audio>
+
+	<audio id="timer">
+		<source src="sounds\Processed Stopwatch Effect.mp3" type="audio/mpeg">
+	</audio>
+
+	<audio id="endOfRoundSound">
+		<source src="sounds\Correct Answer Sound Effect.mp3" type="audio/mpeg">
+	</audio>
+
+	<audio id="closeAlert">
+		<source src="sounds\closeAlert.wav" type="audio/wav">
+	</audio>
+
+	<!-- End audio clips -->
+
+</body>
+
+<script src="socket.io/socket.io.js"></script>
+<script src="jquery-3.1.1.js"></script>
+<script src="bootstrap-3.3.7-dist\js\bootstrap.min.js"></script>
+<script src="timers.js"></script>
+<script src="fabric.js"></script>
+<script src="words.js"></script>
+<script src="canvas.js"></script>
+<script src="client.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#myModal').modal({
+			backdrop: 'static'
+		})
+	});
+</script>
 
 </html>
