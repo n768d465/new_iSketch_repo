@@ -1,19 +1,20 @@
 "use strict";
 
 // JS includes.
+const path = require('path')
 const express = require('express'),
     app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 // Directories
-app.use(express.static(__dirname + '/docs/lib'));
-app.use(express.static(__dirname + '/docs/src'));
-app.use(express.static(__dirname + '/node_modules'));
+app.use(express.static(path.join(__dirname, '/docs/lib')));
+app.use(express.static(path.join(__dirname + '/docs/src')));
+app.use(express.static(path.join(__dirname + '/node_modules')));
 
 // Obtains the HTML file to establish a connection with.
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/docs/index.html');
+    res.sendFile(path.join(__dirname + '/docs/index.html'));
 });
 
 // Uses the TCP port to establish a connection.
