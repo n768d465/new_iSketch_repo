@@ -16,29 +16,26 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/docs/index.html');
 });
 
-
 // Uses the TCP port to establish a connection.
 http.listen(8080, function () {
     console.log('Connected to *:80. Listening...');
 });
 
-const roundTime = 120 * 1000;       /* Time for a standard round (2 minutes) */
-const activityTime = 25 * 1000;     /* Time before considered asleep
-                                     * (25 seconds)
-                                     */
+const roundTime = 120 * 1000;
+const activityTime = 25 * 1000;
 
-var users = [];                     /* Userlist. */
-var timer;                          /* Time for the alarm timer. */
-var alarmTimer;                     /* Alarm timer. */
-var roundTimer;                     /* Standard round timer. */
-var activityTimer;                  /* Activity timer. */
-var word_history = [];              /* List of all currently used words. */
-var wordIndex = 0;                  /* Word counter for word_history. */
-var hint = "";                      /* Hint for the given word to draw. */
+var users = [];
+var drawingQueue = [];
+var timer;
+var alarmTimer;
+var roundTimer;
+var activityTimer;
+var word_history = [];
+var wordIndex = 0;
+var hint = "";
 
 io.on('connection', socket => {
 
-    //  Adds a user to the userlist when a new user connects.
     socket.on('add user', (name, word) => {
         var player = {
             username: name,
@@ -51,6 +48,7 @@ io.on('connection', socket => {
         if (users.length === 0) player.isDrawing = true;
 
         users.push(player);
+        drawingQueue.push(player);
         word_history.push(word);
 
         adjustTimer();
@@ -65,13 +63,11 @@ io.on('connection', socket => {
         console.log(users);
     });
 
-    //  Messages from the social chat list.
     socket.on('chat message', (msg, msgType) => {
         io.emit('chat message', msg, msgType);
         console.log(msg);
     });
 
-    //  Messages from the game chat list.
     socket.on('game message', (name, msg, word, msgType) => {
         let correctPlayers = getCorrectPlayers(users);
 
@@ -88,30 +84,21 @@ io.on('connection', socket => {
 
         let player = playerStatus(name);
 
-        // If the user gets the word correct
         if (guess.includes(correctWord)) {
 
-            // Player is considered correct, and points are awarded to that player.
             player.isCorrect = true;
             player.points += pointsToGive;
 
-            // Sends a message to all connected users that the user found the word.
             io.emit('game message', name + " has found the word!\n", 'CORRECT GUESS');
 
-            // Sends the newly updated userlist so the points can be displayed
             io.emit('refresh player list', users, player.isCorrect);
 
-            // Sends private messages to the specific correct user, telling that
-            // user that they found the word and how many points they earned.
             io.sockets.in(player.id).emit('game message', "You found the word: " + word_history[wordIndex] + "!\n", 'CORRECT GUESS');
             io.sockets.in(player.id).emit('game message', "You earned " + pointsToGive + " points this round.\n", 'GAME');
             io.sockets.in(player.id).emit('game message', "You can speak here again once the round ends.\n", 'GAME');
 
-            // Prevents the specific correct from sending any more messages
-            // until the round is over.
             io.sockets.in(player.id).emit('lock game input', player.isCorrect, false, word_history[wordIndex]);
 
-            // Alarm timer fires off when the first correct guess is made.
             if (getCorrectPlayers(users) === 1) {
                 getArtist(users).points++;
 
@@ -130,9 +117,6 @@ io.on('connection', socket => {
 
     })
 
-    // Sends canvas data in JSON format to all connected users. The client side
-    // then loads the JSON data and renders it to the canvas. In other words,
-    // this is how the drawing gets displayed to all uesrs.
     socket.on('draw', data => {
         io.emit('draw', data);
         clearTimeout(activityTimer);
@@ -148,7 +132,6 @@ io.on('connection', socket => {
         }
     });
 
-    // Sends out a hint of the current word to all connected users.
     socket.on('give hint', (hintCount, name) => {
         let currentWord = word_history[wordIndex];
 
@@ -172,27 +155,17 @@ io.on('connection', socket => {
         io.emit('give hint', hint);
     });
 
-    // Gets a new word from the client side.
     socket.on('get word', word => {
         word_history.push(word);
     });
 
-    // Disconnects a player
     socket.on('disconnect', () => {
 
-        // Finds the player by their socket id, then removes them from the
-        // userlist.
         if (playerID(socket.id) != null) {
             let isDrawing = playerID(socket.id).isDrawing;
             let name = playerID(socket.id).username;
 
             console.log(name + " has left the game.\n");
-
-            // Clears all timers if there is only one player left.
-
-            // If the disconected user was the artist, a new artist
-            // gets selected and a new round begins.
-
 
             removePlayerByID(socket.id);
             adjustTimer();
@@ -264,49 +237,42 @@ function playerID(sid) {
 var setNextRound = function () {
 
 
-    // Any hints given in the round are cleared, and allows players to make
-    // guesses again.
-    hint = "";
+    let hint = "";
     resetPlayerStatus(users);
     io.emit('reset', users)
 
 
-    // Gets the index of the current artist
-    var oldArtist = users.map(p => {
-        return p.isDrawing
-    }).indexOf(true);
+    var oldArtist = drawingQueue.shift()
 
-    // Sets the index of the artist for the next round
-    var newArtist = (oldArtist + 1) % users.length;
+    if (users.includes(oldArtist)) {
+        drawingQueue.push(oldArtist)
+    }
 
-    // Adjusts artist privileges
-    users[oldArtist].isDrawing = false;
-    users[newArtist].isDrawing = true;
+    var newArtist = drawingQueue[0]
 
-    // Word counter increments, and a new word is retrieved from the client.
+    newArtist.isDrawing = true;
+
     wordIndex++;
     var newWord = getWord();
 
-    // Selected client gives up the artists privileges
-    io.sockets.in(users[oldArtist].id).emit('next round',
+    // Remove drawing rights of old round.
+    io.sockets.in(oldArtist.id).emit('next round',
         users,
         "",
-        users[oldArtist].isDrawing);
+        oldArtist.isDrawing);
 
-    // Selected client gets the artists privileges
-    io.sockets.in(users[newArtist].id).emit('next round',
+    // Give drawing rights to artist of upcoming round.
+    io.sockets.in(newArtist.id).emit('next round',
         users,
         newWord,
-        users[newArtist].isDrawing);
+        newArtist.isDrawing);
 
-    // Announces the new artist to all clients.
     io.emit('game message',
-        " " + users[newArtist].username + " is drawing this round\n",
+        " " + newArtist.username + " is drawing this round\n",
         users,
         undefined,
         'GAME');
 
-    // Round and activity timers are set.
     setRoundTimer();
 }
 
@@ -327,14 +293,13 @@ function getCorrectPlayers(arr) {
     return c;
 }
 
-/**
- *  Sets the "isCorrect" property to false for all players. This is called
- *  at the end of each round and is a helper function for starting a new
- *  round.
+/*
+ * Resets user flags in preparation for an upcoming round.
  */
 function resetPlayerStatus(arr) {
     for (let i = 0; i < arr.length; i++) {
         arr[i].isCorrect = false;
+        arr[i].isDrawing = false;
     }
 }
 
@@ -358,13 +323,19 @@ var getWord = function () {
 }
 
 /**
- *  Adjusts the alarm timer.  This is called anytime a new player joins or
- *  a current player leaves.  The time is 5 seconds when there are two players
- *  only, and 20 seconds for 3 or more players.
+ *  Adjusts game timers for the amount of present players.
  */
 function adjustTimer() {
-    if (users.length <= 2) timer = 5000;
-    else timer = 20000;
+    if (users.length < 2) {
+        clearTimeout(roundTimer);
+        clearTimeout(activityTimer)
+    }
+    else if (users.length == 2) {
+        timer = 5000;
+    }
+    else {
+        timer = 20000;
+    }
 }
 
 /**
@@ -399,19 +370,10 @@ var setRoundTimer = function () {
 
 
     if (users.length > 1) {
-        console.log("Round timer started..\n");
-        // This is the standard three minute timer that is fired off each round.
-        // It will always fire off when a new round begins, and there are at least
-        // two players in each room.
         roundTimer = setTimeout(() => {
             io.emit('game message', "Nobody found the word! The word was: " + word_history[wordIndex] + ".\n", 'NOTICE');
             setNextRound();
         }, roundTime);
-        console.log("Activity timer started..\n");
-
-        // This timer checks to see if the artist is active. If the artist does not
-        // draw anything within the first 25 seconds of the round, this timer will
-        // consider the artist asleep and will start a new round.
         activityTimer = setTimeout(() => {
             io.emit('game message', getArtist(users).username + " seems to be asleep. A new artist will be selected.\n", 'NOTICE');
             setNextRound();
